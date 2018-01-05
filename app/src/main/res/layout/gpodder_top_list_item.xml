@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp">
+
+    <ImageView
+        android:id="@+id/img_gpodder_top"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:scaleType="fitXY"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:srcCompat="@drawable/podcast_img" />
+
+    <TextView
+        android:id="@+id/tv_gpodder_top_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Linux Outlaws"
+        app:layout_constraintLeft_toRightOf="@+id/img_gpodder_top"
+        app:layout_constraintTop_toTopOf="@+id/img_gpodder_top"
+        android:layout_marginLeft="5dp"/>
+
+    <TextView
+        android:id="@+id/tv_gpodder_top_feed_url"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="http://feeds.feedburner.com/linuxoutlws"
+        app:layout_constraintBottom_toBottomOf="@id/img_gpodder_top"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_gpodder_top_title"
+        app:layout_constraintRight_toLeftOf="@+id/img_feed"
+        app:layout_constraintTop_toBottomOf="@+id/tv_gpodder_top_title"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/img_feed"
+        android:src="@drawable/ic_drawer_feed"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_gpodder_top_feed_url"
+        app:layout_constraintRight_toRightOf="@+id/tv_feed_count"
+        app:layout_constraintTop_toTopOf="@+id/tv_gpodder_top_title"
+        app:layout_constraintLeft_toRightOf="@+id/tv_gpodder_top_feed_url"
+        />
+
+    <TextView
+        android:id="@+id/tv_feed_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3321"
+        app:layout_constraintBottom_toBottomOf="@+id/img_feed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/img_feed"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/img_feed" />
+</android.support.constraint.ConstraintLayout>
