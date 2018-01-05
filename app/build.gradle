@@ -20,6 +20,21 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+
+    //flavorDimensions "default"
+    flavorDimensions "free", "paid"
+
+    productFlavors {
+        free {
+            applicationId "capstone.nanodegree.udacity.com.mypodcast.free"
+            dimension "free"
+        }
+
+        paid {
+            applicationId "capstone.nanodegree.udacity.com.mypodcast.paid"
+            dimension "paid"
+        }
+    }
 }
 def AAVersion = '4.4.0'
 def GLIDEVersion = '4.3.1'
@@ -74,6 +89,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:11.4.2'
     //implementation "com.google.firebase:firebase-database:11.8.0"
     implementation 'com.google.firebase:firebase-auth:11.4.2'
+    //freeCompile 'com.google.android.gms:play-services-ads:11.0.4'
+    implementation 'com.google.android.gms:play-services-ads:11.4.2'
 
 }
 

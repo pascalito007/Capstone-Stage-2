@@ -49,6 +49,68 @@
           "status": 2
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:257154702665:android:ce57a8cef20add8a",
+        "android_client_info": {
+          "package_name": "capstone.nanodegree.udacity.com.mypodcast.free"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "257154702665-a1m3dfvl1ema2ctmvepcp2a92b7sqq8b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoMo9ZAifObEGuMc3eNJRJZn230Yd2h6c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:257154702665:android:1346b9f2d5339819",
+        "android_client_info": {
+          "package_name": "capstone.nanodegree.udacity.com.mypodcast.paid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "257154702665-a1m3dfvl1ema2ctmvepcp2a92b7sqq8b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoMo9ZAifObEGuMc3eNJRJZn230Yd2h6c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
     }
   ],
   "configuration_version": "1"
