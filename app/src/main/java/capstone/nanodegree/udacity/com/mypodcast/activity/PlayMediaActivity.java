@@ -3,14 +3,18 @@ package capstone.nanodegree.udacity.com.mypodcast.activity;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -46,6 +50,12 @@ import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
+import com.google.android.gms.ads.doubleclick.PublisherInterstitialAd;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -55,24 +65,25 @@ import org.androidannotations.annotations.ViewById;
 
 import java.io.File;
 
+import capstone.nanodegree.udacity.com.mypodcast.PlayerWidgetProvider;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.EpisodeListFragment;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.EpisodeListFragment_;
 import capstone.nanodegree.udacity.com.mypodcast.model.Episode;
+import capstone.nanodegree.udacity.com.mypodcast.service.AppWidgetPlayerIntentService;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 @EActivity(R.layout.activity_play_media)
 public class PlayMediaActivity extends AppCompatActivity implements ExoPlayer.EventListener, EpisodeListFragment.PlayListClickListener {
     @ViewById(R.id.playerView)
     SimpleExoPlayerView mPlayerView;
-    private SimpleExoPlayer mExoPlayer;
+    SimpleExoPlayer mExoPlayer;
     @ViewById(R.id.toolbar)
     Toolbar toolbar;
     @Extra("episode_extra")
-    @InstanceState
     Episode episode;
     @Extra("img")
-    @InstanceState
     String img;
     @ViewById(R.id.tv_description)
     TextView description;
@@ -82,16 +93,27 @@ public class PlayMediaActivity extends AppCompatActivity implements ExoPlayer.Ev
     @ViewById(R.id.pb_loading_indicator)
     ProgressBar pbLoadingIndicator;
 
+    @ViewById(R.id.adView)
+    AdView mAdView;
+    SharedPreferences sharedPreferences;
+
 
     @AfterViews
     public void myOnCreate() {
         toolbar.setTitle(episode.getTitle());
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             description.setText(Html.fromHtml(episode.getFullDescription(), Html.FROM_HTML_MODE_COMPACT));
         } else {
             description.setText(Html.fromHtml(episode.getFullDescription()));
+        }
+        //Log.d("episodevalue:", episode.toString() + "|" + img + "|player" + mExoPlayer + "|playerattached:" + mPlayerView.getPlayer() + "|" + mMediaSession);
+        if (mMediaSession != null) {
+            mMediaSession.setActive(false);
+            //Log.d("mMediasession:", mMediaSession.isActive() + "|");
         }
         Glide.with(this).asBitmap().load(img).into(new SimpleTarget<Bitmap>() {
             @Override
@@ -99,9 +121,10 @@ public class PlayMediaActivity extends AppCompatActivity implements ExoPlayer.Ev
                 mPlayerView.setDefaultArtwork(resource);
             }
         });
-
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("media_title", episode.getTitle());
+        editor.apply();
         initializeMediaSession();
-
 
         String rootUrl = episode.getMp3FileUrl().substring(0, episode.getMp3FileUrl().indexOf("/", 7));
         String other = episode.getMp3FileUrl().substring(rootUrl.length());
@@ -117,6 +140,22 @@ public class PlayMediaActivity extends AppCompatActivity implements ExoPlayer.Ev
             EpisodeListFragment episodeListFragment = new EpisodeListFragment_().builder().arg("podcast_id_extra", episode.getPodcastId()).build();
             getSupportFragmentManager().beginTransaction().add(R.id.container, episodeListFragment).commit();
         }
+        if (sharedPreferences.getString(Constant.bottom_title, null) != null) {
+            if (!sharedPreferences.getString(Constant.bottom_title, null).equals(episode.getTitle()))
+                AppWidgetPlayerIntentService.startActionUpdateMediaTitle(this);
+        } else {
+            AppWidgetPlayerIntentService.startActionUpdateMediaTitle(this);
+        }
+
+        //Set up for pre-fetching interstitial ad request
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+
+
+        AdRequest adRequest = new AdRequest.Builder()
+                //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice("FA9F653AECE1C006CA7AB09735E30CD9")
+                .build();
+        mAdView.loadAd(adRequest);
     }
 
 
@@ -236,8 +275,25 @@ public class PlayMediaActivity extends AppCompatActivity implements ExoPlayer.Ev
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        releasePlayer();
-        mMediaSession.setActive(false);
+        //releasePlayer();
+        //mMediaSession.setActive(false);
+        setBottomValues();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setBottomValues();
+    }
+
+    public void setBottomValues() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(Constant.bottom_play_pause_icon, R.drawable.exo_controls_pause);
+        editor.putString(Constant.bottom_img_cover, img);
+        editor.putString(Constant.bottom_title, episode.getTitle());
+        editor.putString(Constant.bottom_sub_title, episode.getDescription());
+        editor.putString(Constant.bottom_mp3_url, episode.getMp3FileUrl());
+        editor.apply();
     }
 
     private void releasePlayer() {
@@ -278,8 +334,10 @@ public class PlayMediaActivity extends AppCompatActivity implements ExoPlayer.Ev
             pbLoadingIndicator.setVisibility(View.INVISIBLE);
         }
         mMediaSession.setPlaybackState(mStateBuilder.build());
+
         showNotification(mStateBuilder.build());
     }
+
 
     @Override
     public void onRepeatModeChanged(int repeatMode) {
@@ -344,12 +402,21 @@ public class PlayMediaActivity extends AppCompatActivity implements ExoPlayer.Ev
     private class MySessionCallback extends MediaSessionCompat.Callback {
         @Override
         public void onPlay() {
+
             mExoPlayer.setPlayWhenReady(true);
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), PlayerWidgetProvider.class));
+            PlayerWidgetProvider.updateMediaTitle(getApplicationContext(), appWidgetManager, episode.getTitle(), R.drawable.exo_controls_pause, appWidgetIds);
         }
 
         @Override
         public void onPause() {
+
             mExoPlayer.setPlayWhenReady(false);
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), PlayerWidgetProvider.class));
+            PlayerWidgetProvider.updateMediaTitle(getApplicationContext(), appWidgetManager, episode.getTitle(), R.drawable.exo_controls_play, appWidgetIds);
+            Log.d("mediastate:", "onPause" + "|" + mStateBuilder.build().getState());
         }
 
         @Override
@@ -357,6 +424,7 @@ public class PlayMediaActivity extends AppCompatActivity implements ExoPlayer.Ev
             mExoPlayer.seekTo(0);
         }
     }
+
 
     public static class MediaReceiver extends BroadcastReceiver {
         public MediaReceiver() {
@@ -367,6 +435,7 @@ public class PlayMediaActivity extends AppCompatActivity implements ExoPlayer.Ev
             MediaButtonReceiver.handleIntent(mMediaSession, intent);
         }
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

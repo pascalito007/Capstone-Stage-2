@@ -35,7 +35,7 @@ public class GpodderCategoryPodcastAdapter extends RecyclerView.Adapter<GpodderC
     public void onBindViewHolder(GpodderCategoryPodcastViewHolder holder, int position) {
         Category podcast = list.get(position);
         holder.tvTitle.setText(podcast.getTitle());
-        holder.tvFeedCount.setText(podcast.getUsage());
+        holder.tvFeedCount.setText(podcast.getUsage()+"");
 
     }
 

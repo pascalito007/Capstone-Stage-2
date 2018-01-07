@@ -15,4 +15,13 @@ public class Constant {
     public static final String root_itune_podcast_url="https://itunes.apple.com/lookup?id=";
     public static final String root_gpodder_feed_url_part="https://gpodder.net/api/2/tag/";
 
+    public static final String ACTION_UPDATE_MEDIA_TITLE = "capstone.nanodegree.udacity.com.mypodcast.update_media_title";
+
+    public static final String bottom_title = "bottom_title";
+    public static final String bottom_sub_title = "bottom_sub_title";
+    public static final String bottom_img_cover = "bottom_img_cover";
+    public static final String bottom_play_pause_icon = "bottom_play_pause_icon";
+    public static final String bottom_mp3_url = "bottom_mp3_url";
+
+
 }

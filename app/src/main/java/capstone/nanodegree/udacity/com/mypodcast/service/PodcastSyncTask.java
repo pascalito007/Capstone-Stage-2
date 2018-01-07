@@ -2,6 +2,7 @@ package capstone.nanodegree.udacity.com.mypodcast.service;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -104,8 +105,7 @@ public class PodcastSyncTask {
             //Get random 2 categories
             if (!list.isEmpty()) {
                 //First category
-                //List<Category> listx=Stream.of(list).filter(e->Integer.parseInt(e.getUsage())>=6).collect(Collectors.toList());
-                Category category1 = list.get(new Random().nextInt(Stream.of(list).filter(e -> Integer.parseInt(e.getUsage()) >= 6).collect(Collectors.toList()).size()));
+                Category category1 = list.get(new Random().nextInt(Stream.of(list).filter(e -> e.getUsage() >= 6).collect(Collectors.toList()).size()));
                 Log.d("podcastcat11:", category1.toString());
                 editor.putString("category1", category1.getTitle());
                 editor.apply();
@@ -136,8 +136,7 @@ public class PodcastSyncTask {
                 }
 
                 //Second category
-                //List<Category> listz=Stream.of(list).filter(e->Integer.parseInt(e.getUsage())>=6).collect(Collectors.toList());
-                Category category2 = list.get(new Random().nextInt(Stream.of(list).filter(e -> Integer.parseInt(e.getUsage()) >= 6).collect(Collectors.toList()).size()));
+                Category category2 = list.get(new Random().nextInt(Stream.of(list).filter(e -> e.getUsage() >= 6).collect(Collectors.toList()).size()));
                 Log.d("podcastcat22:", category2.toString());
                 editor.putString("category2", category2.getTitle());
                 editor.apply();

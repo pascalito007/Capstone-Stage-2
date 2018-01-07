@@ -16,6 +16,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.androidannotations.annotations.AfterViews;
@@ -57,6 +58,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @ViewById(R.id.tv_category_name2)
     TextView category2Name;
     SharedPreferences sp;
+
 
 
     MainFragmentAdapter recommendationAdapter, category1Adapter, category2Adapter;

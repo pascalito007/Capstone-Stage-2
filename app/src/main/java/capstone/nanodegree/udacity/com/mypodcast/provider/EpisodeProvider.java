@@ -9,6 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
+import java.util.UUID;
 
 /**
  * Created by jem001 on 04/01/2018.
@@ -91,7 +94,12 @@ public class EpisodeProvider extends ContentProvider {
                 int rowsInserted = 0;
                 try {
                     for (ContentValues value : values) {
+                        Object link = value.get(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_LINK);
+                        if (link == null || link.toString().isEmpty())
+                            value.put(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_LINK, UUID.randomUUID().toString());
                         long _id = db.insert(MyPodcastContract.MyPodcastEntry.EPISODE_TABLE_NAME, null, value);
+                        Log.d("insertvalues:", value + "||" + _id);
+
                         if (_id != -1) {
                             rowsInserted++;
                         }

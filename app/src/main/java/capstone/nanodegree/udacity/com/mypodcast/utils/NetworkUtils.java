@@ -85,7 +85,7 @@ public class NetworkUtils {
         episode.setDescription(json.has("description") ? json.getString("description") : "");
         episode.setFullDescription(json.has("description") ? json.getString("description") : "");
         episode.setTitle(json.has("title") ? json.getString("title") : "");
-        episode.setLink(json.has("link") ? json.getString("link").replaceAll(".","").replaceAll("-","").replaceAll(":","").replaceAll("/","") : (UUID.randomUUID().toString().replaceAll("-","")));
+        episode.setLink(json.has("link") ? json.getString("link").replaceAll(".", "").replaceAll("-", "").replaceAll(":", "").replaceAll("/", "") : (UUID.randomUUID().toString()));
         episode.setPubDate(json.has("pubDate") ? json.getString("pubDate") : "");
         //episode.setDuration(duration == null ? "" : duration);
         episode.setAuthor(json.has("itunes:author") ? json.getString("itunes:author") : "");
@@ -116,7 +116,7 @@ public class NetworkUtils {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             Category category = new Category();
             category.setTitle(jsonObject.getString("title"));
-            category.setUsage(jsonObject.getString("usage"));
+            category.setUsage(jsonObject.getInt("usage"));
             category.setTag(jsonObject.getString("tag"));
             list.add(category);
         }
@@ -157,7 +157,7 @@ public class NetworkUtils {
         return null;
     }
 
-    public static List<Episode> getEpisodeListFromFeed(String result,String podcastId) throws JSONException {
+    public static List<Episode> getEpisodeListFromFeed(String result, String podcastId) throws JSONException {
         List<Episode> list = new ArrayList<>();
         JSONObject jsonObject = new JSONObject(result);
         JSONArray jsonArray = jsonObject.getJSONObject("rss").getJSONObject("channel").getJSONArray("item");
@@ -165,9 +165,9 @@ public class NetworkUtils {
             JSONObject object = jsonArray.getJSONObject(i);
             Episode episode = NetworkUtils.fromFeedItems(object);
             episode.setPodcastId(podcastId);
+            Log.d("podcastepisode:", episode.toString());
             list.add(episode);
         }
-
         return list;
     }
 
@@ -201,7 +201,11 @@ public class NetworkUtils {
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_SUBSCRIBERS, jsonObject.getString("subscribers"));
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_COVER_IMG, jsonObject.getString("logo_url"));
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER, "gpodder.net");
-            contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, jsonObject.getString("url"));
+            if (jsonObject.getString("url") == null || jsonObject.getString("url").isEmpty())
+                contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, UUID.randomUUID().toString());
+            else
+                contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, jsonObject.getString("url"));
+
 
             contentValues[i] = contentValue;
         }
@@ -221,8 +225,11 @@ public class NetworkUtils {
             podcast.setCoverImage(jsonObject.getString("logo_url"));
             podcast.setProvider("gpodder.net");
             podcast.setPodcastId(jsonObject.getString("url"));
+            if (podcast.getPodcastId() == null || podcast.getPodcastId().isEmpty())
+                podcast.setPodcastId(UUID.randomUUID().toString());
+            else
 
-            list.add(podcast);
+                list.add(podcast);
         }
         return list;
     }
@@ -238,7 +245,10 @@ public class NetworkUtils {
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_SUBSCRIBERS, podcast.getSubscribers());
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_COVER_IMG, podcast.getCoverImage());
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER, "gpodder.net");
-            contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, podcast.getPodcastId().replaceAll(".","").replaceAll("-","").replaceAll(":", "").replaceAll("/", ""));
+            //if (podcast.getPodcastId() == null || podcast.getPodcastId().isEmpty())
+                contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, UUID.randomUUID().toString());
+            //else
+                //contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, podcast.getPodcastId().replaceAll(".", "").replaceAll("-", "").replaceAll(":", "").replaceAll("/", ""));
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_MAIN_SCREEEN, mainSreenTag);
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_CATEGORY_FLAG, categoryFlag);
             contentValues[i] = contentValue;

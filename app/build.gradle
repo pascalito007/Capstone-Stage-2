@@ -9,6 +9,12 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions{
+            annotationProcessorOptions{
+                arguments=["resourcePackageName":"capstone.nanodegree.udacity.com.mypodcast"]
+            }
+        }
     }
     buildTypes {
         release {
@@ -21,18 +27,18 @@ android {
         sourceCompatibility 1.8
     }
 
-    //flavorDimensions "default"
-    flavorDimensions "free", "paid"
+    flavorDimensions "default"
+    //flavorDimensions "free", "paid"
 
     productFlavors {
         free {
             applicationId "capstone.nanodegree.udacity.com.mypodcast.free"
-            dimension "free"
+            //dimension "free"
         }
 
         paid {
             applicationId "capstone.nanodegree.udacity.com.mypodcast.paid"
-            dimension "paid"
+            //dimension "paid"
         }
     }
 }
@@ -64,8 +70,6 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$GLIDEVersion"
     annotationProcessor "com.github.bumptech.glide:compiler:$GLIDEVersion"
     implementation 'com.squareup.okhttp3:okhttp:3.9.1'
-    //implementation 'net.simonvt.schematic:schematic:0.7.0'
-    //annotationProcessor 'net.simonvt.schematic:schematic-compiler:0.7.0'
     implementation 'com.facebook.stetho:stetho:1.5.0'
 
     implementation("com.mikepenz:materialdrawer:6.0.2@aar") {

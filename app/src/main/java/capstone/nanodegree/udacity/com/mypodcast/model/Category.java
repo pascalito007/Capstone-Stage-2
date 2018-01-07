@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Parcel
 public class Category implements Serializable {
      String title;
-     String usage;
+     Integer usage;
      String tag;
      Integer usage2;
 
@@ -42,11 +42,11 @@ public class Category implements Serializable {
         this.title = title;
     }
 
-    public String getUsage() {
+    public Integer getUsage() {
         return usage;
     }
 
-    public void setUsage(String usage) {
+    public void setUsage(Integer usage) {
         this.usage = usage;
     }
 

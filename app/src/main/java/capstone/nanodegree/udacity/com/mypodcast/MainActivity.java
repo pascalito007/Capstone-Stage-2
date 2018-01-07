@@ -1,6 +1,8 @@
 package capstone.nanodegree.udacity.com.mypodcast;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -8,8 +10,11 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
@@ -20,9 +25,12 @@ import capstone.nanodegree.udacity.com.mypodcast.IdlingResource.SimpleIdlingReso
 import capstone.nanodegree.udacity.com.mypodcast.fragment.DownloadFragment_;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.MainFragment;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.MainFragment_;
+import capstone.nanodegree.udacity.com.mypodcast.fragment.PlayBackControlFragment;
+import capstone.nanodegree.udacity.com.mypodcast.fragment.PlayBackControlFragment_;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.SubscriptionFragment_;
 import capstone.nanodegree.udacity.com.mypodcast.login.LoginFragment_;
 import capstone.nanodegree.udacity.com.mypodcast.service.PodcastSyncUtils;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
@@ -30,7 +38,9 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     @Extra("no_account_from_download")
     String fromEpisode;
-
+    //@ViewById(R.id.bottom_container)
+    //LinearLayout mBottomContainer;
+    SharedPreferences sharedPreferences;
 
     @Nullable
     SimpleIdlingResource mIdlingResource;
@@ -49,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
     @AfterViews
     void myOnCreate() {
+        Log.d("oncreatecontainer:", "Yes");
+        //setBottomContainer();
         getIdlingResource();
 
         PodcastSyncUtils.initialize(this);
@@ -66,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.subscription:
                     Fragment fragment = new SubscriptionFragment_();
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
-                    MainFragment.mIdlingResource=mIdlingResource;
+                    MainFragment.mIdlingResource = mIdlingResource;
                     break;
                 case R.id.action_discover:
                     Fragment mainFragment = new MainFragment_();
@@ -88,6 +100,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("onresmeContainer:", "Yes");
+        setBottomContainer();
+
+    }
+
+    public void setBottomContainer() {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Log.d("bottomTitle:", sharedPreferences.getString(Constant.bottom_title, null) + "");
+        if (sharedPreferences.getString(Constant.bottom_title, null) == null) {
+            findViewById(R.id.controls_container).setVisibility(View.GONE);
+        } else {
+            findViewById(R.id.controls_container).setVisibility(View.VISIBLE);
+            PlayBackControlFragment fragment = PlayBackControlFragment_.builder()
+                    //.arg("tag", category.getTag())
+                    .build();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_playback_controls, fragment).commit();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

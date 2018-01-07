@@ -72,7 +72,6 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
     @ViewById(R.id.podcast_img)
     ImageView podcast_img;
     @Extra("podcast_extra")
-    @InstanceState
     Podcast podcast;
     @ViewById(R.id.pb_loading_indicator)
     ProgressBar pbLoadingIndicator;
@@ -90,7 +89,6 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
     AppBarLayout appBarLayout;
     @ViewById(R.id.toolbar_layout)
     CollapsingToolbarLayout collapsingToolbarLayout;
-    @InstanceState
     List<Episode> episodeList;
     @ViewById(R.id.fab_subscribe)
     FloatingActionButton fabSubscribe;
@@ -156,9 +154,9 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
     public void btnSubscribeClick() {
 
         if (episodeAdapter.getItemCount() != 0) {
-            if (podcast.getSubscribeFlag() != 1 && !episodeList.isEmpty()) {
+            if (podcast.getSubscribeFlag()==null || podcast.getSubscribeFlag() != 1) {
                 ContentValues[] episodesContentValues = NetworkUtils.getEpisodeContentValuesFromArrayList(episodeList, podcast.getPodcastId());
-                Log.d("episode:", episodesContentValues.length + "");
+                Log.d("episodevaluesSize:", episodesContentValues.length + "");
                 if (episodesContentValues.length != 0) {
                     updatePodcast(1);
                     getContentResolver().bulkInsert(MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI, episodesContentValues);
