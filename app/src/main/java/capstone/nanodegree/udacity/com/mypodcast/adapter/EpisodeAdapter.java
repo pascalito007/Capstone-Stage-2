@@ -1,12 +1,6 @@
 package capstone.nanodegree.udacity.com.mypodcast.adapter;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Build;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -15,15 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.androidannotations.annotations.App;
 
 import java.io.File;
 import java.util.List;
 
 import capstone.nanodegree.udacity.com.mypodcast.R;
-import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity;
 import capstone.nanodegree.udacity.com.mypodcast.model.Episode;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
 

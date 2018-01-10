@@ -2,6 +2,7 @@ package capstone.nanodegree.udacity.com.mypodcast.activity;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -11,34 +12,30 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.Extra;
-import org.androidannotations.annotations.InstanceState;
-import org.androidannotations.annotations.ViewById;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.EpisodeDetailsFragment;
-import capstone.nanodegree.udacity.com.mypodcast.fragment.EpisodeDetailsFragment_;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 
-@EActivity(R.layout.activity_episode_details)
 public class EpisodeDetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    @ViewById(R.id.pager)
+    @BindView(R.id.pager)
     ViewPager mPager;
     Cursor mCursor;
     MyPagerAdapter myPagerAdapter;
-    @InstanceState
+    //@InstanceState
     long selectedItemId;
-    @Extra("episode_id")
-    @InstanceState
+    //@Extra("episode_id")
+    //@InstanceState
     Long episode_id;
     private static final int EPISODE_DETAILS_LOAD_ID = 77;
 
-
-    @AfterViews
-    public void myOnCreate() {
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_episode_details);
+        ButterKnife.bind(this);
         getSupportLoaderManager().initLoader(EPISODE_DETAILS_LOAD_ID, null, this);
 
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -65,6 +62,8 @@ public class EpisodeDetailsActivity extends AppCompatActivity implements LoaderM
         }
 
     }
+
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -112,7 +111,11 @@ public class EpisodeDetailsActivity extends AppCompatActivity implements LoaderM
         @Override
         public Fragment getItem(int position) {
             mCursor.moveToPosition(position);
-            EpisodeDetailsFragment fragment = EpisodeDetailsFragment_.builder().arg("ARG_ITEM_ID", mCursor.getLong(mCursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_ID))).build();
+            EpisodeDetailsFragment fragment=new EpisodeDetailsFragment();
+            Bundle bundle=new Bundle();
+            bundle.putLong("ARG_ITEM_ID",mCursor.getLong(mCursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_ID)));
+            fragment.setArguments(bundle);
+            //EpisodeDetailsFragment fragment = EpisodeDetailsFragment_.builder().arg("ARG_ITEM_ID", mCursor.getLong(mCursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_ID))).build();
             return fragment;
         }
 

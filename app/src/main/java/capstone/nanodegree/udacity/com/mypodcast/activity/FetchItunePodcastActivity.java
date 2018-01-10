@@ -1,15 +1,14 @@
 package capstone.nanodegree.udacity.com.mypodcast.activity;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.parceler.Parcels;
@@ -19,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.ItunePodcastAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.model.Podcast;
@@ -30,21 +31,23 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-@EActivity(R.layout.activity_fetch_itune)
 public class FetchItunePodcastActivity extends AppCompatActivity implements ItunePodcastAdapter.PodcastClickListener {
     private static final String TAG = FetchItunePodcastActivity.class.getName();
-    @ViewById(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @ViewById(R.id.rv_itune)
+    @BindView(R.id.rv_itune)
     RecyclerView rvItune;
-    @ViewById(R.id.pb_loading_indicator)
+    @BindView(R.id.pb_loading_indicator)
     ProgressBar pb_loading_indicator;
     List<Podcast> results = new ArrayList<>();
     ItunePodcastAdapter adapter;
 
 
-    @AfterViews
-    void myOnCreate() {
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_fetch_itune);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -89,13 +92,16 @@ public class FetchItunePodcastActivity extends AppCompatActivity implements Itun
             }
         });
 
-
     }
+
+
 
     @Override
     public void onItemClick(Podcast podcast) {
         podcast.setProvider("itunes");
-        EpisodeActivity_.intent(this).extra("podcast_extra", Parcels.wrap(podcast)).start();
+        Intent intent=new Intent(this,EpisodeActivity.class);
+        intent.putExtra("podcast_extra",podcast);
+        startActivity(intent);
     }
 
 

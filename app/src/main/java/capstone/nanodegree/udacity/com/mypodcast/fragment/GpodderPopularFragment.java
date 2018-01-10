@@ -1,18 +1,17 @@
 package capstone.nanodegree.udacity.com.mypodcast.fragment;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.Extra;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.ViewById;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,11 +21,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import capstone.nanodegree.udacity.com.mypodcast.R;
-import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity_;
+import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.GpodderTopPodcastAdapter;
-import capstone.nanodegree.udacity.com.mypodcast.model.Category;
-import capstone.nanodegree.udacity.com.mypodcast.model.GpodderTop;
 import capstone.nanodegree.udacity.com.mypodcast.model.Podcast;
 import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 import capstone.nanodegree.udacity.com.mypodcast.utils.NetworkUtils;
@@ -40,31 +40,39 @@ import static capstone.nanodegree.udacity.com.mypodcast.utils.Constant.gpodder_t
  * Created by jem001 on 06/12/2017.
  */
 
-@EFragment(R.layout.gpodder_fragment)
 public class GpodderPopularFragment extends Fragment implements GpodderTopPodcastAdapter.ItemClickListener {
-    @ViewById(R.id.rv_gpodder_top)
+    @BindView(R.id.rv_gpodder_top)
     RecyclerView rv_gpodder_top;
     GpodderTopPodcastAdapter adapter;
-    @ViewById(R.id.pb_loading_indicator)
+    @BindView(R.id.pb_loading_indicator)
     ProgressBar pb_loading_indicator;
-    @FragmentArg("tag")
     String tag;
+    private Unbinder unbinder;
 
-    @AfterViews
-    public void myOnCreateView() {
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view= inflater.inflate(R.layout.gpodder_fragment, container, false);
+        unbinder =ButterKnife.bind(this,view);
+        Bundle bundle=getArguments();
+        tag=bundle.getString("tag");
         pb_loading_indicator.setVisibility(View.VISIBLE);
         new GpodderTopPodcastTask().execute();
         adapter = new GpodderTopPodcastAdapter(this);
         rv_gpodder_top.setHasFixedSize(true);
         rv_gpodder_top.setAdapter(adapter);
         Log.d("tag_extra:", tag + "");
-
+        return view;
     }
+
+
 
     @Override
     public void onItemClick(Podcast podcast) {
         podcast.setProvider("gpodder.net");
-        EpisodeActivity_.intent(getContext()).extra("podcast_extra", Parcels.wrap(podcast)).start();
+        Intent intent=new Intent(getContext(),EpisodeActivity.class);
+        intent.putExtra("podcast_extra",podcast);
+        startActivity(intent);
     }
 
 
@@ -119,5 +127,9 @@ public class GpodderPopularFragment extends Fragment implements GpodderTopPodcas
             pb_loading_indicator.setVisibility(View.GONE);
         }
 
+    }
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

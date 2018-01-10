@@ -8,8 +8,7 @@ import java.io.Serializable;
  * Created by jem001 on 05/12/2017.
  */
 
-@Parcel
-public class Episode {
+public class Episode implements Serializable{
      String title;
 
      String feedIdentifier;

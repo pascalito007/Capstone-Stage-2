@@ -3,21 +3,24 @@ package capstone.nanodegree.udacity.com.mypodcast.fragment;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.ViewById;
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.EpisodeAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.model.Episode;
@@ -29,25 +32,28 @@ import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 /**
  * Created by jem001 on 04/12/2017.
  */
-@EFragment(R.layout.episode_list_fragment)
 public class EpisodeListFragment extends Fragment implements EpisodeAdapter.EpisodeClickListener {
 
-    @ViewById(R.id.rv_episode)
+    @BindView(R.id.rv_episode)
     RecyclerView rv_episode_list;
-    @ViewById(R.id.pb_loading_indicator)
+    @BindView(R.id.pb_loading_indicator)
     ProgressBar pb_loading_indicator;
     EpisodeAdapter episodeAdapter;
     Podcast podcast;
     String feedUrl = "";
     List<Episode> episodeList;
-    @FragmentArg("podcast_id_extra")
     String podcastId;
     public PlayListClickListener listener;
+    private Unbinder unbinder;
 
-
-    @AfterViews
-    void myOnCreateView() {
-        Cursor cursor = getActivity().getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcastId).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID+" = ?", new String[]{podcastId}, null);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.episode_list_fragment, container, false);
+        unbinder =ButterKnife.bind(this,view);
+        Bundle bundle=getArguments();
+        podcastId=bundle.getString("podcast_id_extra");
+        Cursor cursor = getActivity().getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcastId).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcastId}, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             podcast = Podcast.getPodcastFromCursor(cursor);
@@ -62,21 +68,19 @@ public class EpisodeListFragment extends Fragment implements EpisodeAdapter.Epis
         }
         pb_loading_indicator.setVisibility(View.VISIBLE);
         episodeAdapter = new EpisodeAdapter(this, getContext(), "play");
-        //RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
-        //rv_episode_list.setLayoutManager(layoutManager);
-        //rv_episode_list.setHasFixedSize(true);
         rv_episode_list.setAdapter(episodeAdapter);
         rv_episode_list.setNestedScrollingEnabled(false);
-
+        return view;
     }
+
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            listener= (PlayListClickListener) context;
-        }catch (ClassCastException ex){
-            throw new ClassCastException(context.toString()+" must implement OnItemClickListener");
+            listener = (PlayListClickListener) context;
+        } catch (ClassCastException ex) {
+            throw new ClassCastException(context.toString() + " must implement OnItemClickListener");
         }
     }
 
@@ -145,5 +149,9 @@ public class EpisodeListFragment extends Fragment implements EpisodeAdapter.Epis
 
     public interface PlayListClickListener {
         void onPlayItemClick(Episode episode);
+    }
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

@@ -1,6 +1,7 @@
 package capstone.nanodegree.udacity.com.mypodcast.fragment;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -11,16 +12,17 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
+import android.view.ViewGroup;
 
 import java.io.File;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import capstone.nanodegree.udacity.com.mypodcast.R;
-import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeDetailsActivity_;
+import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeDetailsActivity;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.DownloadAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
@@ -28,24 +30,30 @@ import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
 /**
  * Created by jem001 on 04/12/2017.
  */
-@EFragment(R.layout.download_fragment)
 public class DownloadFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, DownloadAdapter.ItemClickListener {
 
-    @ViewById(R.id.rv_download)
+    @BindView(R.id.rv_download)
     RecyclerView rv_downloads;
     DownloadAdapter adapter;
     private static final int DOWNLOAD_LOAD_ID = 33;
+    private Unbinder unbinder;
 
-
-    @AfterViews
-    void myOnCreateView() {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view= inflater.inflate(R.layout.download_fragment, container, false);
+        unbinder =ButterKnife.bind(this,view);
         adapter = new DownloadAdapter(this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         rv_downloads.setLayoutManager(layoutManager);
         rv_downloads.setHasFixedSize(true);
         rv_downloads.setAdapter(adapter);
         getLoaderManager().initLoader(DOWNLOAD_LOAD_ID, null, this);
+        return view;
     }
+
+
+
 
 
     @Override
@@ -73,7 +81,9 @@ public class DownloadFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onItemClick(long episodeId) {
-        EpisodeDetailsActivity_.intent(this).extra("episode_id", episodeId).start();
+        Intent intent = new Intent(getContext(), EpisodeDetailsActivity.class);
+        intent.putExtra("episode_id",episodeId);
+        startActivity(intent);
     }
 
     @Override
@@ -104,5 +114,9 @@ public class DownloadFragment extends Fragment implements LoaderManager.LoaderCa
             cursor.close();
         }
 
+    }
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

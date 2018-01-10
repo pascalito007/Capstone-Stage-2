@@ -7,13 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 import android.widget.RemoteViews;
 
-import org.androidannotations.annotations.App;
-
 import capstone.nanodegree.udacity.com.mypodcast.service.AppWidgetPlayerIntentService;
-import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 /**
  * Implementation of App Widget functionality.
@@ -25,7 +21,7 @@ public class PlayerWidgetProvider extends AppWidgetProvider {
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.player_widget);
-        Intent intent = MainActivity_.intent(context).get();
+        Intent intent = new Intent(context,MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setOnClickPendingIntent(R.id.tvTitle, pendingIntent);
         if (mediaTitle == null || mediaTitle.isEmpty())

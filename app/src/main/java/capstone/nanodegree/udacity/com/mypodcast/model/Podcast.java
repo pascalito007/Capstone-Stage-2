@@ -4,14 +4,15 @@ import android.database.Cursor;
 
 import org.parceler.Parcel;
 
+import java.io.Serializable;
+
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 
 /**
  * Created by jem001 on 04/12/2017.
  */
 
-@Parcel
-public class Podcast {
+public class Podcast implements Serializable{
     String podcastId;
     String provider;
     String title;

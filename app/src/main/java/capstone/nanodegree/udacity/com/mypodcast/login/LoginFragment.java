@@ -3,13 +3,16 @@ package capstone.nanodegree.udacity.com.mypodcast.login;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,28 +20,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,39 +41,33 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
-import java.io.IOException;
 import java.util.HashMap;
 
-import capstone.nanodegree.udacity.com.mypodcast.MainActivity;
+import butterknife.BindView;
+import butterknife.OnClick;
 import capstone.nanodegree.udacity.com.mypodcast.R;
-import capstone.nanodegree.udacity.com.mypodcast.fragment.MainFragment_;
+import capstone.nanodegree.udacity.com.mypodcast.fragment.MainFragment;
 import capstone.nanodegree.udacity.com.mypodcast.model.User;
 
 /**
  * Represents Sign in screen and functionality of the app
  */
-@EFragment(R.layout.activity_login)
 public class LoginFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String LOG_TAG = LoginFragment.class.getSimpleName();
     /* A dialog that is presented until the Firebase authentication finished. */
     private ProgressDialog mAuthProgressDialog;
-    @ViewById(R.id.edit_text_email)
+    @BindView(R.id.edit_text_email)
     EditText mEditTextEmailInput;
-    @ViewById(R.id.edit_text_password)
+    @BindView(R.id.edit_text_password)
     EditText mEditTextPasswordInput;
-    @ViewById(R.id.linear_layout_login_activity)
+    @BindView(R.id.linear_layout_login_activity)
     LinearLayout linearLayoutLoginActivity;
     FirebaseAuth mAuth;
-    @ViewById(R.id.login_with_password)
+    @BindView(R.id.login_with_password)
     Button btnLogin;
     String mUserEmail, mPassword;
-    @ViewById(R.id.login_with_google)
+    @BindView(R.id.login_with_google)
     SignInButton btnGoogleSign;
 
     /**
@@ -92,8 +81,10 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     GoogleSignInAccount mGoogleAccount;
     GoogleApiClient mGoogleApiClient;
 
-    @AfterViews
-    public void myOnCreateView() {
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view= inflater.inflate(R.layout.activity_login, container, false);
         mAuth = FirebaseAuth.getInstance();
         mAuthProgressDialog = new ProgressDialog(getActivity());
         mAuthProgressDialog.setTitle(getString(R.string.progress_dialog_loading));
@@ -118,15 +109,18 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
                 .requestEmail()
                 .build();
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity()).enableAutoManage(getActivity(), this).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
+        return view;
     }
+
+
 
 
     /**
      * Open CreateAccountFragment when user taps on "Sign up" TextView
      */
-    @Click(R.id.tv_sign_up)
+    @OnClick(R.id.tv_sign_up)
     public void onSignUpPressed() {
-        Fragment createAccountFragment = new CreateAccountFragment_();
+        CreateAccountFragment createAccountFragment = new CreateAccountFragment();
         getFragmentManager().beginTransaction().replace(R.id.main_container, createAccountFragment).commit();
     }
 
@@ -134,7 +128,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     /**
      * Sign in with Password provider (used when user taps "Done" action on keyboard)
      */
-    @Click(R.id.login_with_password)
+    @OnClick(R.id.login_with_password)
     public void signInPassword() {
 
         mUserEmail = mEditTextEmailInput.getText().toString();
@@ -159,7 +153,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
                     Log.d("success:", task.toString());
                     FirebaseUser user = mAuth.getCurrentUser();
                     if (user.isEmailVerified()) {
-                        Fragment mainFragment = new MainFragment_();
+                        MainFragment mainFragment = new MainFragment();
                         getFragmentManager().beginTransaction().replace(R.id.main_container, mainFragment).commit();
                         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
                         SharedPreferences.Editor spe = sp.edit();
@@ -190,7 +184,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
 
 
     /* Sets up the Google Sign In Button : https://developers.google.com/android/reference/com/google/android/gms/common/SignInButton */
-    @Click(R.id.login_with_google)
+    @OnClick(R.id.login_with_google)
     void setupGoogleSignIn() {
         btnGoogleSign.setSize(SignInButton.SIZE_WIDE);
 
@@ -252,7 +246,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
                                             }
                                         });
 
-                                        Fragment mainFragment = new MainFragment_();
+                                        MainFragment mainFragment = new MainFragment();
                                         getFragmentManager().beginTransaction().replace(R.id.main_container, mainFragment).commit();
 
                                     }

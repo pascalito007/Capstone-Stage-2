@@ -17,9 +17,8 @@
         android:roundIcon="@mipmap/ic_podcast_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
-            android:name=".MainActivity_"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -29,31 +28,31 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.FetchItunePodcastActivity_"
+            android:name=".activity.FetchItunePodcastActivity"
             android:label="@string/title_activity_fetch_itune"
-            android:parentActivityName=".MainActivity_"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="capstone.nanodegree.udacity.com.mypodcast.MainActivity_" />
+                android:value="capstone.nanodegree.udacity.com.mypodcast.MainActivity" />
         </activity>
         <activity
-            android:name=".activity.EpisodeActivity_"
+            android:name=".activity.EpisodeActivity"
             android:label="@string/title_activity_fetch_itune_episode"
-            android:parentActivityName=".activity.FetchItunePodcastActivity_"
+            android:parentActivityName=".activity.FetchItunePodcastActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="capstone.nanodegree.udacity.com.mypodcast.activity.FetchItunePodcastActivity_" />
+                android:value="capstone.nanodegree.udacity.com.mypodcast.activity.FetchItunePodcastActivity" />
         </activity>
         <activity
-            android:name=".activity.FetchGpodderMainActivity_"
+            android:name=".activity.FetchGpodderMainActivity"
             android:label="@string/title_activity_fetch_gpodder_main"
-            android:parentActivityName=".MainActivity_"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="capstone.nanodegree.udacity.com.mypodcast.MainActivity_" />
+                android:value="capstone.nanodegree.udacity.com.mypodcast.MainActivity" />
         </activity>
 
         <provider
@@ -75,23 +74,25 @@
                 <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
-
         <service
             android:name=".service.DownloadService"
             android:exported="false" />
         <service
             android:name=".service.AppWidgetPlayerIntentService"
             android:exported="false" />
+        <service
+            android:name=".service.PlayMediaService"
+            android:exported="false" />
 
         <activity
-            android:name=".activity.PlayMediaActivity_"
+            android:name=".activity.PlayMediaActivity"
             android:label="@string/title_activity_play_media"
             android:launchMode="singleTop"
-            android:parentActivityName=".activity.EpisodeActivity_"
+            android:parentActivityName=".activity.EpisodeActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity_" />
+                android:value="capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity" />
         </activity>
 
         <receiver android:name=".activity.PlayMediaActivity$MediaReceiver">
@@ -101,22 +102,22 @@
         </receiver>
 
         <activity
-            android:name=".activity.EpisodeDetailsActivity_"
+            android:name=".activity.EpisodeDetailsActivity"
             android:label="@string/title_activity_episode_details"
-            android:parentActivityName=".MainActivity_"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="capstone.nanodegree.udacity.com.mypodcast.MainActivity_" />
+                android:value="capstone.nanodegree.udacity.com.mypodcast.MainActivity" />
         </activity>
         <activity
-            android:name=".activity.FetchGpodderCategoryPodcastActivity_"
+            android:name=".activity.FetchGpodderCategoryPodcastActivity"
             android:label="@string/title_activity_fetch_gpodder_category_podcast"
-            android:parentActivityName=".activity.FetchGpodderMainActivity_"
+            android:parentActivityName=".activity.FetchGpodderMainActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="capstone.nanodegree.udacity.com.mypodcast.activity.FetchGpodderMainActivity_" />
+                android:value="capstone.nanodegree.udacity.com.mypodcast.activity.FetchGpodderMainActivity" />
         </activity>
 
         <receiver android:name=".PlayerWidgetProvider">

@@ -1,39 +1,37 @@
 package capstone.nanodegree.udacity.com.mypodcast.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.Extra;
-import org.parceler.Parcels;
-
+import butterknife.ButterKnife;
 import capstone.nanodegree.udacity.com.mypodcast.R;
-import capstone.nanodegree.udacity.com.mypodcast.fragment.GpodderCategoryFragment;
-import capstone.nanodegree.udacity.com.mypodcast.fragment.GpodderCategoryFragment_;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.GpodderPopularFragment;
-import capstone.nanodegree.udacity.com.mypodcast.fragment.GpodderPopularFragment_;
 import capstone.nanodegree.udacity.com.mypodcast.model.Category;
-import capstone.nanodegree.udacity.com.mypodcast.model.GpodderTop;
 
-@EActivity(R.layout.activity_fetch_gpodder_category_podcast)
 public class FetchGpodderCategoryPodcastActivity extends AppCompatActivity {
-    @Extra("category_extra")
     Category category;
 
-
-    @AfterViews
-    public void myOnCreate() {
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_fetch_gpodder_category_podcast);
+        ButterKnife.bind(this);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (category == null)
             finish();
-        GpodderPopularFragment fragment = GpodderPopularFragment_.builder().arg("tag", category.getTag()).build();
+        Intent intent=getIntent();
+        if (intent!=null)
+            category=intent.getParcelableExtra("category_extra");
+
+        GpodderPopularFragment fragment = new GpodderPopularFragment();
+        Bundle bundle=new Bundle();
+        bundle.putString("tag",category.getTag());
+        fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().add(R.id.fragment, fragment).commit();
+
     }
+
+
 }

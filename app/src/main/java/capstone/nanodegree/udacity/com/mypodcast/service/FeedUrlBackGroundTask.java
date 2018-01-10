@@ -1,42 +1,38 @@
 package capstone.nanodegree.udacity.com.mypodcast.service;
 
-import org.androidannotations.annotations.Background;
-import org.androidannotations.annotations.EBean;
-import org.androidannotations.annotations.RootContext;
-import org.androidannotations.annotations.UiThread;
+import android.os.AsyncTask;
+
 import org.json.JSONException;
 
-import java.io.IOException;
-
-import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity;
+import capstone.nanodegree.udacity.com.mypodcast.FeedListener;
 import capstone.nanodegree.udacity.com.mypodcast.utils.NetworkUtils;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * Created by jem001 on 06/12/2017.
  */
-@EBean
-public class FeedUrlBackGroundTask {
-    @RootContext
-    EpisodeActivity activity;
+public class FeedUrlBackGroundTask extends AsyncTask<Void, Void, String> {
+    FeedListener listener;
+    String url;
 
-    @Background
-    public void backGroundTask(String url) {
-        updateUI(NetworkUtils.okHttpGetRequestStringResult(url));
+    public FeedUrlBackGroundTask(String url, FeedListener listener) {
+        this.url = url;
+        this.listener = listener;
     }
 
-    @UiThread
-    public void updateUI(String result) {
-        try {
-            if (result != null) {
-                activity.showResult(result);
+    @Override
+    protected String doInBackground(Void... voids) {
+        return NetworkUtils.okHttpGetRequestStringResult(url);
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+        if (result != null) {
+            try {
+                listener.showResult(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
+
 }

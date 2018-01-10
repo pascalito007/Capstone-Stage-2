@@ -8,7 +8,6 @@ import java.io.Serializable;
  * Created by jem001 on 07/12/2017.
  */
 
-@Parcel
 public class Category implements Serializable {
      String title;
      Integer usage;

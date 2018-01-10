@@ -1,9 +1,11 @@
 package capstone.nanodegree.udacity.com.mypodcast.fragment;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -16,20 +18,22 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.LinearLayout;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
 import org.parceler.Parcels;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import capstone.nanodegree.udacity.com.mypodcast.IdlingResource.SimpleIdlingResource;
 import capstone.nanodegree.udacity.com.mypodcast.R;
-import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity_;
-import capstone.nanodegree.udacity.com.mypodcast.activity.FetchGpodderMainActivity_;
-import capstone.nanodegree.udacity.com.mypodcast.activity.FetchItunePodcastActivity_;
+import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity;
+import capstone.nanodegree.udacity.com.mypodcast.activity.FetchGpodderMainActivity;
+import capstone.nanodegree.udacity.com.mypodcast.activity.FetchItunePodcastActivity;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.MainFragmentAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.MainFragmentTopListAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.model.Podcast;
@@ -38,26 +42,26 @@ import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 /**
  * Created by jem001 on 04/12/2017.
  */
-@EFragment(R.layout.main_fragment)
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, MainFragmentAdapter.PodcastClickListener, MainFragmentTopListAdapter.PodcastClickListener {
 
-    @ViewById(R.id.rv_recommendations)
+    @BindView(R.id.rv_recommendations)
     RecyclerView rvRecommendations;
-    @ViewById(R.id.rv_top_podcast)
+    @BindView(R.id.rv_top_podcast)
     RecyclerView rvTopList;
-    @ViewById(R.id.rv_category1)
+    @BindView(R.id.rv_category1)
     RecyclerView rvCategory1;
-    @ViewById(R.id.rv_category2)
+    @BindView(R.id.rv_category2)
     RecyclerView rvCategory2;
-    @ViewById(R.id.view_pager)
+    @BindView(R.id.view_pager)
     ViewPager viewPager;
-    @ViewById(R.id.tab_layout)
+    @BindView(R.id.tab_layout)
     TabLayout tabLayout;
-    @ViewById(R.id.tv_category_name1)
+    @BindView(R.id.tv_category_name1)
     TextView category1Name;
-    @ViewById(R.id.tv_category_name2)
+    @BindView(R.id.tv_category_name2)
     TextView category2Name;
     SharedPreferences sp;
+    private Unbinder unbinder;
 
 
 
@@ -72,10 +76,11 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public static SimpleIdlingResource mIdlingResource;
 
 
-
-    @AfterViews
-    public void myOnCreateView() {
-
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.main_fragment, container, false);
+        unbinder =ButterKnife.bind(this,view);
         sp = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         String email = sp.getString("email", null);
@@ -119,18 +124,21 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         getLoaderManager().initLoader(TOP_LIST_LOADER_ID, null, this);
         getLoaderManager().initLoader(FIRST_CATEGORY_LOADER_ID, null, this);
         getLoaderManager().initLoader(SECOND_CATEGORY_LOADER_ID, null, this);
-
-
+        return view;
     }
 
-    @Click(R.id.img_itune)
+
+
+    @OnClick(R.id.img_itune)
     public void imgItuneClick() {
-        FetchItunePodcastActivity_.intent(getContext()).start();
+        Intent intent = new Intent(getContext(), FetchItunePodcastActivity.class);
+        startActivity(intent);
     }
 
-    @Click(R.id.img_gpodder_category)
+    @OnClick(R.id.img_gpodder_category)
     public void imgGpodderCategoryClick() {
-        FetchGpodderMainActivity_.intent(getContext()).start();
+        Intent intent = new Intent(getContext(), FetchGpodderMainActivity.class);
+        startActivity(intent);
     }
 
 
@@ -140,13 +148,13 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             case RECOMMENDATIONS_LOADER_ID:
                 if (mIdlingResource != null)
                     mIdlingResource.setIdleState(false);
-                return new CursorLoader(getContext(), MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER+" = ? and "+ MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_MAIN_SCREEEN+" = ? and "+ MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_CATEGORY_FLAG+" = ?", new String[]{"itunes", "Yes", "No"}, null);
+                return new CursorLoader(getContext(), MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER + " = ? and " + MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_MAIN_SCREEEN + " = ? and " + MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_CATEGORY_FLAG + " = ?", new String[]{"itunes", "Yes", "No"}, null);
             case TOP_LIST_LOADER_ID:
-                return new CursorLoader(getContext(), MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER+" = ? and "+ MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_MAIN_SCREEEN+" = ? and "+ MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_CATEGORY_FLAG+" = ?", new String[]{"gpodder.net", "Yes", "No"}, null);
+                return new CursorLoader(getContext(), MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER + " = ? and " + MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_MAIN_SCREEEN + " = ? and " + MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_CATEGORY_FLAG + " = ?", new String[]{"gpodder.net", "Yes", "No"}, null);
             case FIRST_CATEGORY_LOADER_ID:
-                return new CursorLoader(getContext(), MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER+" = ? and "+ MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_MAIN_SCREEEN+" = ? and "+ MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_CATEGORY_FLAG+" = ?", new String[]{"gpodder.net", "Yes", "Yes 1"}, null);
+                return new CursorLoader(getContext(), MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER + " = ? and " + MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_MAIN_SCREEEN + " = ? and " + MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_CATEGORY_FLAG + " = ?", new String[]{"gpodder.net", "Yes", "Yes 1"}, null);
             case SECOND_CATEGORY_LOADER_ID:
-                return new CursorLoader(getContext(), MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER+" = ? and "+ MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_MAIN_SCREEEN+" = ? and "+ MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_CATEGORY_FLAG+" = ?", new String[]{"gpodder.net", "Yes", "Yes 2"}, null);
+                return new CursorLoader(getContext(), MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER + " = ? and " + MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_MAIN_SCREEEN + " = ? and " + MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_CATEGORY_FLAG + " = ?", new String[]{"gpodder.net", "Yes", "Yes 2"}, null);
             default:
                 return null;
         }
@@ -188,19 +196,23 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onItemClick(Podcast podcast) {
-        Cursor cursor = getActivity().getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID+" = ?", new String[]{podcast.getPodcastId()}, null);
+        Cursor cursor = getActivity().getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcast.getPodcastId()}, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             podcast = Podcast.getPodcastFromCursor(cursor);
         }
         Log.d("podcastcontent:", podcast + "");
-        EpisodeActivity_.intent(this).extra("podcast_extra", Parcels.wrap(podcast)).start();
+        Intent intent = new Intent(getContext(), EpisodeActivity.class);
+        intent.putExtra("podcast_extra",podcast);
+        startActivity(intent);
     }
 
     @Override
     public void onGpodderItemClickListener(Podcast podcast) {
         Log.d("podcastcontent:", podcast + "");
-        EpisodeActivity_.intent(this).extra("podcast_extra", Parcels.wrap(podcast)).start();
+        Intent intent = new Intent(getContext(), EpisodeActivity.class);
+        intent.putExtra("podcast_extra",podcast);
+        startActivity(intent);
     }
 
 
@@ -214,11 +226,11 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new ViewPagerSlide1Fragment_();
+                    return new ViewPagerSlide1Fragment();
                 case 1:
-                    return new ViewPagerSlide1Fragment_();
+                    return new ViewPagerSlide1Fragment();
                 case 2:
-                    return new ViewPagerSlide1Fragment_();
+                    return new ViewPagerSlide1Fragment();
                 default:
                     return null;
             }
@@ -229,5 +241,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         public int getCount() {
             return 3;
         }
+    }
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

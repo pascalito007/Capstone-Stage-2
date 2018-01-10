@@ -1,11 +1,14 @@
 package capstone.nanodegree.udacity.com.mypodcast.login;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -23,13 +26,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.ViewById;
-
 import java.util.HashMap;
 
+import butterknife.BindView;
+import butterknife.OnClick;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.model.User;
 
@@ -37,32 +37,34 @@ import capstone.nanodegree.udacity.com.mypodcast.model.User;
 /**
  * Represents Sign up screen and functionality of the app
  */
-@EFragment(R.layout.activity_create_account)
 public class CreateAccountFragment extends Fragment {
     private static final String LOG_TAG = CreateAccountFragment.class.getSimpleName();
     private ProgressDialog mAuthProgressDialog;
-    @ViewById(R.id.edit_text_username_create)
+    @BindView(R.id.edit_text_username_create)
     EditText mEditTextUsernameCreate;
-    @ViewById(R.id.edit_text_email_create)
+    @BindView(R.id.edit_text_email_create)
     EditText mEditTextEmailCreate;
-    @ViewById(R.id.edit_text_password_create)
+    @BindView(R.id.edit_text_password_create)
     EditText mEditTextPasswordCreate;
-    @ViewById(R.id.linear_layout_create_account_activity)
+    @BindView(R.id.linear_layout_create_account_activity)
     LinearLayout linearLayoutCreateAccountActivity;
-    @ViewById(R.id.btn_create_account_final)
+    @BindView(R.id.btn_create_account_final)
     Button btnCreateAccount;
     private FirebaseAuth mAuth;
     private String mUserName, mUserEmail, mPassword;
 
-    @AfterViews
-    public void myOnCreateView() {
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view= inflater.inflate(R.layout.activity_create_account, container, false);
         mAuth = FirebaseAuth.getInstance();
         mAuthProgressDialog = new ProgressDialog(getContext());
         mAuthProgressDialog.setTitle(getResources().getString(R.string.progress_dialog_loading));
         mAuthProgressDialog.setMessage(getResources().getString(R.string.progress_dialog_creating_user_with_firebase));
         mAuthProgressDialog.setCancelable(false);
-
+        return view;
     }
+
 
 
 
@@ -70,7 +72,7 @@ public class CreateAccountFragment extends Fragment {
     /**
      * Create new account using Firebase email/password provider
      */
-    @Click(R.id.btn_create_account_final)
+    @OnClick(R.id.btn_create_account_final)
     public void onCreateAccountPressed() {
         mUserName = mEditTextUsernameCreate.getText().toString();
         mUserEmail = mEditTextEmailCreate.getText().toString().toLowerCase();
@@ -144,7 +146,7 @@ public class CreateAccountFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
-                                Fragment login = new LoginFragment_();
+                                LoginFragment login = new LoginFragment();
                                 getFragmentManager().beginTransaction().replace(R.id.main_container, login).commit();
                                 Toast.makeText(getContext(),
                                         "Verification email sent to " + user.getEmail(),

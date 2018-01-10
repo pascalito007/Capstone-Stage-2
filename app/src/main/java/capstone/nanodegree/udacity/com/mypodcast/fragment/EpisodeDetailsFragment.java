@@ -10,7 +10,9 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.Html;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -21,41 +23,41 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.EFragment;
-import org.androidannotations.annotations.FragmentArg;
-import org.androidannotations.annotations.ViewById;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 
 /**
  * Created by jem001 on 04/12/2017.
  */
-@EFragment(R.layout.fragment_episode_detail)
 public class EpisodeDetailsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    @FragmentArg("ARG_ITEM_ID")
     Long ARG_ITEM_ID;
     long mItemId;
     Cursor mCursor;
     private static final int EPISODE_LOAD_ID = 66;
-    @ViewById(R.id.photo)
+    @BindView(R.id.photo)
     ImageView backImage;
-    @ViewById(R.id.article_body)
+    @BindView(R.id.article_body)
     TextView body;
-    @ViewById(R.id.tvSeeMore)
+    @BindView(R.id.tvSeeMore)
     TextView readMore;
-    @ViewById(R.id.pb_loading_indicator)
+    @BindView(R.id.pb_loading_indicator)
     ProgressBar loading_indicator;
-    @ViewById(R.id.article_title)
+    @BindView(R.id.article_title)
     TextView title;
-    @ViewById(R.id.article_byline)
+    @BindView(R.id.article_byline)
     TextView subTitle;
+    private Unbinder unbinder;
 
-
-    @AfterViews
-    void myOnCreateView() {
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view= inflater.inflate(R.layout.fragment_episode_detail, container, false);
+        unbinder =ButterKnife.bind(this,view);
+        Bundle bundle=getArguments();
+        ARG_ITEM_ID=bundle.getLong("ARG_ITEM_ID");
         if (ARG_ITEM_ID != null) {
             mItemId = ARG_ITEM_ID;
             getLoaderManager().initLoader(EPISODE_LOAD_ID, null, this);
@@ -65,7 +67,10 @@ public class EpisodeDetailsFragment extends Fragment implements LoaderManager.Lo
             cursor.moveToFirst();
             cursor.close();
         }
+        return view;
     }
+
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -137,5 +142,9 @@ public class EpisodeDetailsFragment extends Fragment implements LoaderManager.Lo
     public void onLoaderReset(Loader<Cursor> loader) {
         // mCursor.close();
         // mCursor = null;
+    }
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

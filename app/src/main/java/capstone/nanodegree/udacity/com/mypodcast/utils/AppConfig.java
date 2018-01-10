@@ -1,20 +1,9 @@
 package capstone.nanodegree.udacity.com.mypodcast.utils;
 
 import android.app.Application;
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.facebook.stetho.Stetho;
 import com.google.firebase.database.FirebaseDatabase;
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
-import com.mikepenz.materialdrawer.util.DrawerImageLoader;
-import com.mikepenz.materialdrawer.util.DrawerUIUtils;
-
-import capstone.nanodegree.udacity.com.mypodcast.R;
 
 /**
  * Created by jem001 on 07/12/2017.
@@ -28,7 +17,7 @@ public class AppConfig extends Application {
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
-        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+        /*DrawerImageLoader.init(new AbstractDrawerImageLoader() {
             @Override
             public void set(ImageView imageView, Uri uri, Drawable placeholder) {
                 Glide.with(imageView.getContext()).load(uri).into(imageView);
@@ -57,6 +46,7 @@ public class AppConfig extends Application {
 
                 return super.placeholder(ctx, tag);
             }
-        });
+        });*/
     }
+
 }

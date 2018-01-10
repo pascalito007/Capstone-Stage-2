@@ -9,7 +9,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -30,80 +32,74 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Bean;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.Extra;
-import org.androidannotations.annotations.InstanceState;
-import org.androidannotations.annotations.ViewById;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
-import capstone.nanodegree.udacity.com.mypodcast.MainActivity_;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import capstone.nanodegree.udacity.com.mypodcast.FeedListener;
+import capstone.nanodegree.udacity.com.mypodcast.MainActivity;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.EpisodeAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.model.Download;
 import capstone.nanodegree.udacity.com.mypodcast.model.Episode;
 import capstone.nanodegree.udacity.com.mypodcast.model.Podcast;
-import capstone.nanodegree.udacity.com.mypodcast.provider.EpisodeProvider;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 import capstone.nanodegree.udacity.com.mypodcast.service.DownloadService;
 import capstone.nanodegree.udacity.com.mypodcast.service.FeedItemsBackGroundTask;
 import capstone.nanodegree.udacity.com.mypodcast.service.FeedUrlBackGroundTask;
+import capstone.nanodegree.udacity.com.mypodcast.utils.AppConfig;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppDatabaseTasks;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
 import capstone.nanodegree.udacity.com.mypodcast.utils.NetworkUtils;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
-@EActivity(R.layout.activity_episode)
-public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter.EpisodeClickListener {
+public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter.EpisodeClickListener,FeedListener {
     private static final int PERMISSION_REQUEST_CODE = 1;
     private static final int PLAY_ACTIVITY_REQUEST = 44;
-    @ViewById(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @ViewById(R.id.rv_episode)
+    @BindView(R.id.rv_episode)
     RecyclerView rvEpisode;
-    @ViewById(R.id.podcast_img)
+    @BindView(R.id.podcast_img)
     ImageView podcast_img;
-    @Extra("podcast_extra")
     Podcast podcast;
-    @ViewById(R.id.pb_loading_indicator)
+    @BindView(R.id.pb_loading_indicator)
     ProgressBar pbLoadingIndicator;
 
 
     String feedUrl = "";
-    //@NonConfigurationInstance
-    @Bean
-    FeedUrlBackGroundTask feedUrlBackGroundTask;
-    //@NonConfigurationInstance
-    @Bean
-    FeedItemsBackGroundTask feedItemsBackGroundTask;
     EpisodeAdapter episodeAdapter;
-    @ViewById(R.id.app_bar)
+    @BindView(R.id.app_bar)
     AppBarLayout appBarLayout;
-    @ViewById(R.id.toolbar_layout)
+    @BindView(R.id.toolbar_layout)
     CollapsingToolbarLayout collapsingToolbarLayout;
     List<Episode> episodeList;
-    @ViewById(R.id.fab_subscribe)
+    @BindView(R.id.fab_subscribe)
     FloatingActionButton fabSubscribe;
-    @ViewById(R.id.podcast_img_clean)
+    @BindView(R.id.podcast_img_clean)
     ImageView podcast_img_clean;
-    @ViewById(R.id.podcast_cover_title)
+    @BindView(R.id.podcast_cover_title)
     TextView tvPodcastCoverTitle;
-    @ViewById(R.id.podcast_cover_subtitle)
+    @BindView(R.id.podcast_cover_subtitle)
     TextView tvPodcastCoverSubTitle;
 
-
-    @AfterViews
-    void myOnCreate() {
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_episode);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Intent intent=getIntent();
+        if(intent!=null){
+            podcast= (Podcast) intent.getExtras().getSerializable("podcast_extra");
+        }
         Log.d("podcastvalues:", podcast + "");
         if (podcast == null) finish();
         registerReceiver();
@@ -118,9 +114,10 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         tvPodcastCoverTitle.setText(podcast.getTitle());
         pbLoadingIndicator.setVisibility(View.VISIBLE);
         if (!podcast.getProvider().equals("itunes")) {
-            feedItemsBackGroundTask.backGroundTask(podcast.getFeedUrl());
+            new FeedItemsBackGroundTask(podcast.getFeedUrl(),this).execute();
+
         } else {
-            feedUrlBackGroundTask.backGroundTask(podcast.getFeedUrl());
+            new FeedUrlBackGroundTask(podcast.getFeedUrl(),this).execute();
         }
         setTitle("");
         if (findViewById(R.id.frame1) == null) {
@@ -148,9 +145,11 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         episodeAdapter = new EpisodeAdapter(this, this, "");
         rvEpisode.setAdapter(episodeAdapter);
         rvEpisode.setNestedScrollingEnabled(false);
+
     }
 
-    @Click(R.id.fab_subscribe)
+
+    @OnClick(R.id.fab_subscribe)
     public void btnSubscribeClick() {
 
         if (episodeAdapter.getItemCount() != 0) {
@@ -183,12 +182,13 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         getContentResolver().update(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), cv, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcast.getPodcastId()});
     }
 
-    public void showResult(String result) throws JSONException, IOException {
+    public void showResult(String result) throws JSONException {
         if (result != null && !result.isEmpty()) {
             JSONObject resultObject = new JSONObject(result);
             feedUrl = resultObject.getJSONArray("results").getJSONObject(0).getString("feedUrl");
             if (!feedUrl.isEmpty())
-                feedItemsBackGroundTask.backGroundTask(feedUrl);
+                //feedItemsBackGroundTask.backGroundTask(feedUrl);
+                new FeedItemsBackGroundTask(feedUrl,this).execute();
         }
     }
 
@@ -205,7 +205,10 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
 
     @Override
     public void onItemClick(Episode episode, View view) {
-        PlayMediaActivity_.intent(this).extra("episode_extra", Parcels.wrap(episode)).extra("img", podcast.getCoverImage()).startForResult(PLAY_ACTIVITY_REQUEST);
+        Intent intent = new Intent(this, PlayMediaActivity.class);
+        intent.putExtra("episode_extra",episode);
+        intent.putExtra("img",podcast.getCoverImage());
+        startActivityForResult(intent,PLAY_ACTIVITY_REQUEST);
     }
 
     @Override
@@ -218,7 +221,9 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
                 Toast.makeText(this,
                         "Create account and login befor downloading",
                         Toast.LENGTH_SHORT).show();
-                MainActivity_.intent(this).extra("no_account_from_download", "1").start();
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("no_account_from_download","1");
+                startActivity(intent);
             } else {
                 Cursor cursor = AppDatabaseTasks.getEpisodeListByPodcastId(podcast.getPodcastId(), this);
                 Log.d("episodelist:", cursor + "");
@@ -338,4 +343,6 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
             }
         }
     }
+
+
 }
