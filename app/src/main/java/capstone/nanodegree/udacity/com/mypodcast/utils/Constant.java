@@ -23,5 +23,10 @@ public class Constant {
     public static final String bottom_play_pause_icon = "bottom_play_pause_icon";
     public static final String bottom_mp3_url = "bottom_mp3_url";
 
+    public static final String ACTION_NEW_URL = "capstone.nanodegree.udacity.com.mypodcast.action_new_url";
 
+
+    public static final String ACTION_GET_EXOPLAYER_INSTANCE ="capstone.nanodegree.udacity.com.mypodcast.action_get_exoplayer_instance" ;
+    public static String player_state="player_state";
+    public static String player_current_position="player_current_position";
 }

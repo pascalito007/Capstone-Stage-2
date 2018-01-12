@@ -12,7 +12,8 @@ import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
  * Created by jem001 on 04/12/2017.
  */
 
-public class Podcast implements Serializable{
+@Parcel
+public class Podcast{
     String podcastId;
     String provider;
     String title;
@@ -22,7 +23,7 @@ public class Podcast implements Serializable{
     String subscribers;
     String feedCount;
     String feedUrl;
-    Integer subscribeFlag;
+    String subscribeFlag;
 
 
     public Podcast() {
@@ -36,11 +37,11 @@ public class Podcast implements Serializable{
         this.feedCount = feedCount;
     }
 
-    public Integer getSubscribeFlag() {
+    public String getSubscribeFlag() {
         return subscribeFlag;
     }
 
-    public void setSubscribeFlag(Integer subscribeFlag) {
+    public void setSubscribeFlag(String subscribeFlag) {
         this.subscribeFlag = subscribeFlag;
     }
 
@@ -118,7 +119,7 @@ public class Podcast implements Serializable{
         podcast.setCoverImage(cursor.getString(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_COVER_IMG)));
         podcast.setPodcastId(cursor.getString(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID)));
         podcast.setProvider(cursor.getString(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER)));
-        podcast.setSubscribeFlag(cursor.getInt(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_SUBSCRIBE_FLAG)));
+        podcast.setSubscribeFlag(cursor.getString(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_SUBSCRIBE_FLAG)));
         return podcast;
     }
 

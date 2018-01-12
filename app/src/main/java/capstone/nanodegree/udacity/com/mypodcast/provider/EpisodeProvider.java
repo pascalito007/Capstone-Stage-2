@@ -94,9 +94,9 @@ public class EpisodeProvider extends ContentProvider {
                 int rowsInserted = 0;
                 try {
                     for (ContentValues value : values) {
-                        Object link = value.get(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_LINK);
+                        /*Object link = value.get(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_LINK);
                         if (link == null || link.toString().isEmpty())
-                            value.put(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_LINK, UUID.randomUUID().toString());
+                            value.put(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_LINK, UUID.randomUUID().toString());*/
                         long _id = db.insert(MyPodcastContract.MyPodcastEntry.EPISODE_TABLE_NAME, null, value);
                         Log.d("insertvalues:", value + "||" + _id);
 

@@ -6,8 +6,10 @@ import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -37,10 +39,12 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
+import capstone.nanodegree.udacity.com.mypodcast.eventbus.MessageEvent;
 import capstone.nanodegree.udacity.com.mypodcast.PlayerWidgetProvider;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.activity.PlayMediaActivity;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 /**
  * Created by jem001 on 08/01/2018.
@@ -52,6 +56,7 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
     private PlaybackStateCompat.Builder mStateBuilder;
     private NotificationManager mNotificationManager;
     String mp3_url;
+    public SharedPreferences sharedPreferences;
 
 
     public PlayMediaService() {
@@ -61,28 +66,42 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
     @Override
     public void onCreate() {
         super.onCreate();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        //EventBus.getDefault().register(this);
         initializeMediaSession();
+
+
     }
 
     //S'execute chaque fois qu'on fait startService
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("intentserviceinfo:", intent + "");
+        Log.d("intentserviceinfoPlay:", "|startid:" + startId + "|action:" + intent.getAction());
         if (intent != null) {
-            mp3_url = intent.getStringExtra("mp3_url");
-            Log.d("mp3Url:", mp3_url);
-            String rootUrl = mp3_url.substring(0, mp3_url.indexOf("/", 7));
-            String other = mp3_url.substring(rootUrl.length());
-            File file = AppUtils.getFileInInternalMemory(other.replaceAll("/", "_"));
+            if (startId == 1) {
+                if (intent.getAction().equals(Constant.ACTION_NEW_URL)) {
+                    //mp3_url = intent.getStringExtra("mp3_url");
+                    mp3_url = sharedPreferences.getString(Constant.bottom_mp3_url, null);
+                    Log.d("mp3Url:", mp3_url);
+                    String rootUrl = mp3_url.substring(0, mp3_url.indexOf("/", 7));
+                    String other = mp3_url.substring(rootUrl.length());
+                    File file = AppUtils.getFileInInternalMemory(other.replaceAll("/", "_"));
 
-            //Initalize the player with provided Uri
-            if (file != null) {
-                Log.d("fileavailable:", file.getName());
-                initializePlayer(Uri.fromFile(file));
+                    //Initalize the player with provided Uri
+                    if (file != null) {
+                        Log.d("fileavailable:", file.getName());
+                        initializePlayer(Uri.fromFile(file));
+                    } else {
+                        initializePlayer(Uri.parse(mp3_url));
+                    }
+                }
             } else {
-                initializePlayer(Uri.parse(mp3_url));
+                if (intent.getAction().equals(Constant.ACTION_GET_EXOPLAYER_INSTANCE)) {
+                    EventBus.getDefault().post(new MessageEvent(sharedPreferences.getInt(Constant.player_state, 0), sharedPreferences.getLong(Constant.player_current_position, 0), (SimpleExoPlayer) this.mExoPlayer));
+                }
             }
         }
+
 
         return START_NOT_STICKY;
         //return super.onStartCommand(intent, flags, startId);
@@ -111,7 +130,11 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
             //Log.d("listenervalue:", myServiceListener + "");
             SimpleExoPlayer exoPlayer = (SimpleExoPlayer) mExoPlayer;
             Log.d("playervalue:", exoPlayer + "");
-            EventBus.getDefault().post(exoPlayer);
+            EventBus.getDefault().post(new MessageEvent(mExoPlayer.getPlaybackState(), sharedPreferences.getLong(Constant.player_current_position, 0), exoPlayer));
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putLong(Constant.player_current_position, mExoPlayer.getCurrentPosition());
+            editor.putInt(Constant.bottom_play_pause_icon,R.drawable.exo_controls_pause);
+            editor.apply();
             // Set the ExoPlayer.EventListener to this activity.
             mExoPlayer.addListener(this);
 
@@ -119,6 +142,7 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
             String userAgent = Util.getUserAgent(this, "PlayMediaService");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     this, userAgent), new DefaultExtractorsFactory(), null, null);
+            mExoPlayer.seekTo(sharedPreferences.getLong(Constant.player_current_position, 0));
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(true);
         }
@@ -162,22 +186,22 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
 
 
     public ExoPlayer getExoPlayer() {
-        return mExoPlayer;
+        return this.mExoPlayer;
     }
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
-
+        Log.d("Exoplayerchanges:", "onTimelineChanged");
     }
 
     @Override
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-
+        Log.d("Exoplayerchanges:", "Exoplayerchanges");
     }
 
     @Override
     public void onLoadingChanged(boolean isLoading) {
-
+        Log.d("Exoplayerchanges:", "Exoplayerchanges");
     }
 
     @Override
@@ -196,9 +220,10 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
             //pbLoadingIndicator.setVisibility(View.INVISIBLE);
         }
         mMediaSession.setPlaybackState(mStateBuilder.build());
-        Log.d("stateserviceplay:", mStateBuilder.build().getState() + "|" + mExoPlayer);
+        Log.d("stateserviceplay:", mStateBuilder.build().getState() + "|" + mExoPlayer + "|currentPosition:" + mExoPlayer.getCurrentPosition());
         showNotification(mStateBuilder.build());
-        EventBus.getDefault().postSticky(mStateBuilder.build().getState());
+        SimpleExoPlayer exoPlayer = (SimpleExoPlayer) mExoPlayer;
+        EventBus.getDefault().post(new MessageEvent(mStateBuilder.build().getState(), mExoPlayer.getCurrentPosition(), exoPlayer));
     }
 
     @Override
@@ -223,12 +248,12 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
 
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-
+        Log.d("Exoplayerchanges:", "onPlaybackParametersChanged");
     }
 
     @Override
     public void onSeekProcessed() {
-
+        Log.d("Exoplayerchanges:", "onSeekProcessed");
     }
 
     private class MySessionCallback extends MediaSessionCompat.Callback {
@@ -238,7 +263,12 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
             mExoPlayer.setPlayWhenReady(true);
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), PlayerWidgetProvider.class));
-            PlayerWidgetProvider.updateMediaTitle(getApplicationContext(), appWidgetManager, "", R.drawable.exo_controls_pause, appWidgetIds);
+            PlayerWidgetProvider.updateMediaTitle(getApplicationContext(), appWidgetManager, sharedPreferences.getString(Constant.bottom_title, null), R.drawable.exo_controls_pause, appWidgetIds);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(Constant.bottom_play_pause_icon, R.drawable.exo_controls_pause);
+            editor.putLong(Constant.player_current_position, mExoPlayer.getCurrentPosition());
+            editor.apply();
+            //EventBus.getDefault().post(new MessageEvent(PlaybackStateCompat.STATE_PAUSED,(SimpleExoPlayer) mExoPlayer));
         }
 
         @Override
@@ -247,8 +277,12 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
             mExoPlayer.setPlayWhenReady(false);
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), PlayerWidgetProvider.class));
-            PlayerWidgetProvider.updateMediaTitle(getApplicationContext(), appWidgetManager, "", R.drawable.exo_controls_play, appWidgetIds);
-            //Log.d("mediastate:", "onPause" + "|" + mStateBuilder.build().getState());
+            PlayerWidgetProvider.updateMediaTitle(getApplicationContext(), appWidgetManager, sharedPreferences.getString(Constant.bottom_title, null), R.drawable.exo_controls_play, appWidgetIds);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(Constant.bottom_play_pause_icon, R.drawable.exo_controls_play);
+            editor.putLong(Constant.player_current_position, mExoPlayer.getCurrentPosition());
+            editor.apply();
+            //EventBus.getDefault().post(new MessageEvent(PlaybackStateCompat.STATE_PLAYING,(SimpleExoPlayer) mExoPlayer));
         }
 
         @Override
@@ -293,8 +327,8 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
         PendingIntent contentPendingIntent = PendingIntent.getActivity
                 (this, 0, new Intent(this, PlayMediaActivity.class), 0);
 
-        builder.setContentTitle("title")
-                .setContentText("description")
+        builder.setContentTitle(sharedPreferences.getString(Constant.bottom_title, null))
+                .setContentText(sharedPreferences.getString(Constant.bottom_sub_title, null))
                 .setContentIntent(contentPendingIntent)
                 .setSmallIcon(R.mipmap.ic_podcast_launcher)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -307,6 +341,11 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotificationManager.notify(0, builder.build());
+        EventBus.getDefault().post(new MessageEvent(state.getState(), sharedPreferences.getLong(Constant.player_current_position, 0), (SimpleExoPlayer) mExoPlayer));
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong(Constant.player_current_position, mExoPlayer.getCurrentPosition());
+        editor.putInt(Constant.bottom_play_pause_icon, icon);
+        editor.apply();
     }
 
     @Override
@@ -314,9 +353,9 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
         super.onDestroy();
         releasePlayer();
         mMediaSession.setActive(false);
+        //EventBus.getDefault().unregister(this);
 
     }
-
 
 
     public MediaSessionCompat getMediaSession() {
@@ -333,5 +372,6 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
         }
 
     }
+
 
 }

@@ -29,7 +29,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.model.User;
 
@@ -52,11 +54,13 @@ public class CreateAccountFragment extends Fragment {
     Button btnCreateAccount;
     private FirebaseAuth mAuth;
     private String mUserName, mUserEmail, mPassword;
+    private Unbinder unbinder;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.activity_create_account, container, false);
+        unbinder = ButterKnife.bind(this,view);
         mAuth = FirebaseAuth.getInstance();
         mAuthProgressDialog = new ProgressDialog(getContext());
         mAuthProgressDialog.setTitle(getResources().getString(R.string.progress_dialog_loading));
@@ -191,6 +195,11 @@ public class CreateAccountFragment extends Fragment {
             return false;
         }
         return true;
+    }
+
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 
 }

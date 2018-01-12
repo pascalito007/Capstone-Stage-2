@@ -20,6 +20,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -53,15 +54,15 @@ import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 import capstone.nanodegree.udacity.com.mypodcast.service.DownloadService;
 import capstone.nanodegree.udacity.com.mypodcast.service.FeedItemsBackGroundTask;
 import capstone.nanodegree.udacity.com.mypodcast.service.FeedUrlBackGroundTask;
-import capstone.nanodegree.udacity.com.mypodcast.utils.AppConfig;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppDatabaseTasks;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
 import capstone.nanodegree.udacity.com.mypodcast.utils.NetworkUtils;
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
-public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter.EpisodeClickListener,FeedListener {
+public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter.EpisodeClickListener, FeedListener {
     private static final int PERMISSION_REQUEST_CODE = 1;
     private static final int PLAY_ACTIVITY_REQUEST = 44;
+    private static final String EPISODE_LIST = "items";
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.rv_episode)
@@ -79,7 +80,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
     AppBarLayout appBarLayout;
     @BindView(R.id.toolbar_layout)
     CollapsingToolbarLayout collapsingToolbarLayout;
-    List<Episode> episodeList;
+    public List<Episode> episodeList;
     @BindView(R.id.fab_subscribe)
     FloatingActionButton fabSubscribe;
     @BindView(R.id.podcast_img_clean)
@@ -88,6 +89,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
     TextView tvPodcastCoverTitle;
     @BindView(R.id.podcast_cover_subtitle)
     TextView tvPodcastCoverSubTitle;
+    RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,16 +98,19 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        Intent intent=getIntent();
-        if(intent!=null){
-            podcast= (Podcast) intent.getExtras().getSerializable("podcast_extra");
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            podcast = Parcels.unwrap(intent.getParcelableExtra("podcast_extra"));
         }
+
+
         Log.d("podcastvalues:", podcast + "");
         if (podcast == null) finish();
         registerReceiver();
-        if (podcast.getSubscribeFlag() == null || podcast.getSubscribeFlag() != 1) {
+        if (podcast.getSubscribeFlag() == null || !podcast.getSubscribeFlag().equals("1")) {
             fabSubscribe.setImageDrawable(getResources().getDrawable(R.drawable.ic_subscribe_notification_active));
-        } else if (podcast.getSubscribeFlag() != null && podcast.getSubscribeFlag() == 1) {
+        } else if (podcast.getSubscribeFlag() != null && podcast.getSubscribeFlag().equals("1")) {
             fabSubscribe.setImageDrawable(getResources().getDrawable(R.drawable.ic_subscribe_notification_off));
         }
         Glide.with(this).load(podcast.getCoverImage()).apply(RequestOptions.bitmapTransform(new BlurTransformation(100))).into(podcast_img);
@@ -114,11 +119,13 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         tvPodcastCoverTitle.setText(podcast.getTitle());
         pbLoadingIndicator.setVisibility(View.VISIBLE);
         if (!podcast.getProvider().equals("itunes")) {
-            new FeedItemsBackGroundTask(podcast.getFeedUrl(),this).execute();
+            new FeedItemsBackGroundTask(podcast.getFeedUrl(), this).execute();
 
         } else {
-            new FeedUrlBackGroundTask(podcast.getFeedUrl(),this).execute();
+            new FeedUrlBackGroundTask(podcast.getFeedUrl(), this).execute();
         }
+
+
         setTitle("");
         if (findViewById(R.id.frame1) == null) {
             appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -142,8 +149,10 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         } else {
             setTitle(podcast.getTitle() + " episodes");
         }
+        layoutManager = new LinearLayoutManager(this);
         episodeAdapter = new EpisodeAdapter(this, this, "");
         rvEpisode.setAdapter(episodeAdapter);
+        rvEpisode.setLayoutManager(layoutManager);
         rvEpisode.setNestedScrollingEnabled(false);
 
     }
@@ -153,32 +162,33 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
     public void btnSubscribeClick() {
 
         if (episodeAdapter.getItemCount() != 0) {
-            if (podcast.getSubscribeFlag()==null || podcast.getSubscribeFlag() != 1) {
+            if (podcast.getSubscribeFlag() != null && podcast.getSubscribeFlag().equals("1")) {
+                getContentResolver().delete(MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcast.getPodcastId()});
+                ContentValues cv = new ContentValues();
+                cv.putNull(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_SUBSCRIBE_FLAG);
+                getContentResolver().update(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), cv, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcast.getPodcastId()});
+                podcast.setSubscribers(null);
+                Snackbar.make(fabSubscribe, "Unsubscription done", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                fabSubscribe.setImageDrawable(getResources().getDrawable(R.drawable.ic_subscribe_notification_active));
+            } else {
                 ContentValues[] episodesContentValues = NetworkUtils.getEpisodeContentValuesFromArrayList(episodeList, podcast.getPodcastId());
                 Log.d("episodevaluesSize:", episodesContentValues.length + "");
                 if (episodesContentValues.length != 0) {
-                    updatePodcast(1);
+                    updatePodcast();
                     getContentResolver().bulkInsert(MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI, episodesContentValues);
                     Snackbar.make(fabSubscribe, "Subscription done", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                     fabSubscribe.setImageDrawable(getResources().getDrawable(R.drawable.ic_subscribe_notification_off));
                 }
-            } else {
-                getContentResolver().delete(MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcast.getPodcastId()});
-                ContentValues cv = new ContentValues();
-                cv.putNull(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_SUBSCRIBE_FLAG);
-                getContentResolver().update(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), cv, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcast.getPodcastId()});
-                Snackbar.make(fabSubscribe, "Unsubscription done", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                fabSubscribe.setImageDrawable(getResources().getDrawable(R.drawable.ic_subscribe_notification_active));
             }
         }
     }
 
-    public void updatePodcast(Integer value) {
-        podcast.setSubscribeFlag(value);
+    public void updatePodcast() {
+        podcast.setSubscribeFlag("1");
         ContentValues cv = new ContentValues();
-        cv.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_SUBSCRIBE_FLAG, 1);
+        cv.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_SUBSCRIBE_FLAG, "1");
         getContentResolver().update(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), cv, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcast.getPodcastId()});
     }
 
@@ -188,7 +198,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
             feedUrl = resultObject.getJSONArray("results").getJSONObject(0).getString("feedUrl");
             if (!feedUrl.isEmpty())
                 //feedItemsBackGroundTask.backGroundTask(feedUrl);
-                new FeedItemsBackGroundTask(feedUrl,this).execute();
+                new FeedItemsBackGroundTask(feedUrl, this).execute();
         }
     }
 
@@ -206,9 +216,9 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
     @Override
     public void onItemClick(Episode episode, View view) {
         Intent intent = new Intent(this, PlayMediaActivity.class);
-        intent.putExtra("episode_extra",episode);
-        intent.putExtra("img",podcast.getCoverImage());
-        startActivityForResult(intent,PLAY_ACTIVITY_REQUEST);
+        intent.putExtra("episode_extra", Parcels.wrap(episode));
+        intent.putExtra("img", podcast.getCoverImage());
+        startActivityForResult(intent, PLAY_ACTIVITY_REQUEST);
     }
 
     @Override
@@ -222,7 +232,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
                         "Create account and login befor downloading",
                         Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("no_account_from_download","1");
+                intent.putExtra("no_account_from_download", "1");
                 startActivity(intent);
             } else {
                 Cursor cursor = AppDatabaseTasks.getEpisodeListByPodcastId(podcast.getPodcastId(), this);
@@ -305,6 +315,12 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         return result == PackageManager.PERMISSION_GRANTED;
     }
 
+   /* @Override
+    protected void onResume() {
+        super.onResume();
+        PlayMediaService ps = new PlayMediaService();
+        Log.d("exoplayervalue:", ps.getExoPlayer() + "");
+    }*/
 
     private void requestPermission() {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_CODE);

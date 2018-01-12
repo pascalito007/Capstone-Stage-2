@@ -1,5 +1,6 @@
 package capstone.nanodegree.udacity.com.mypodcast.model;
 
+
 import org.parceler.Parcel;
 
 import java.io.Serializable;
@@ -7,8 +8,8 @@ import java.io.Serializable;
 /**
  * Created by jem001 on 07/12/2017.
  */
-
-public class Category implements Serializable {
+@Parcel
+public class Category {
      String title;
      Integer usage;
      String tag;

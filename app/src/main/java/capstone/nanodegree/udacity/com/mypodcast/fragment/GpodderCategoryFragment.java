@@ -65,7 +65,7 @@ public class GpodderCategoryFragment extends Fragment implements GpodderCategory
     @Override
     public void onItemClick(Category category) {
         Intent intent=new Intent(getContext(),FetchGpodderCategoryPodcastActivity.class);
-        intent.putExtra("category_extra",category);
+        intent.putExtra("category_extra",Parcels.wrap(category));
         startActivity(intent);
     }
 

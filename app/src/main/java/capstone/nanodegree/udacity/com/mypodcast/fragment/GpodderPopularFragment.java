@@ -71,7 +71,7 @@ public class GpodderPopularFragment extends Fragment implements GpodderTopPodcas
     public void onItemClick(Podcast podcast) {
         podcast.setProvider("gpodder.net");
         Intent intent=new Intent(getContext(),EpisodeActivity.class);
-        intent.putExtra("podcast_extra",podcast);
+        intent.putExtra("podcast_extra",Parcels.wrap(podcast));
         startActivity(intent);
     }
 

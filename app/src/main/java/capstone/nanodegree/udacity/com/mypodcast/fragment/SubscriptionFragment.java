@@ -38,8 +38,8 @@ public class SubscriptionFragment extends Fragment implements LoaderManager.Load
     ProgressBar pb_loading_indicator;
     SubscriptionAdapter adapter;
     private static final int SUBSCRIPTION_LOADER_ID = 11;
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    //@BindView(R.id.toolbar)
+    //Toolbar toolbar;
     private Unbinder unbinder;
 
 
@@ -88,7 +88,7 @@ public class SubscriptionFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onItemClick(Podcast podcast) {
         Intent intent = new Intent(getContext(), EpisodeActivity.class);
-        intent.putExtra("podcast_extra",podcast);
+        intent.putExtra("podcast_extra",Parcels.wrap(podcast));
         startActivity(intent);
     }
     @Override public void onDestroyView() {

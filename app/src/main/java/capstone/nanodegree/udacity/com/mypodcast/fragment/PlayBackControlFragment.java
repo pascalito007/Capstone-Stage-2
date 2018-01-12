@@ -57,7 +57,6 @@ public class PlayBackControlFragment extends Fragment {
         String sub = sharedPreferences.getString(Constant.bottom_sub_title, null);
         if (sub != null)
             subTitle.setText(sub.substring(0, (sub.length() <= 15 ? sub.length() : 15)));
-
         imageButton.setImageResource(sharedPreferences.getInt(Constant.bottom_play_pause_icon, 0));
         return view;
     }

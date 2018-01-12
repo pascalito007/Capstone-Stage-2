@@ -85,9 +85,10 @@ public class NetworkUtils {
         episode.setDescription(json.has("description") ? json.getString("description") : "");
         episode.setFullDescription(json.has("description") ? json.getString("description") : "");
         episode.setTitle(json.has("title") ? json.getString("title") : "");
-        episode.setLink(json.has("link") ? json.getString("link").replaceAll(".", "").replaceAll("-", "").replaceAll(":", "").replaceAll("/", "") : (UUID.randomUUID().toString()));
+        episode.setLink(json.has("link") ? json.getString("link").replaceAll("-", "").replaceAll(":", "").replaceAll("/", "") : (UUID.randomUUID().toString().replaceAll("-","")));
+        Log.d("linkepisode:",json.getString("link")+"|"+episode.getLink());
         episode.setPubDate(json.has("pubDate") ? json.getString("pubDate") : "");
-        //episode.setDuration(duration == null ? "" : duration);
+        episode.setDuration(json.has("itunes:duration")?json.getString("itunes:duration"):null);
         episode.setAuthor(json.has("itunes:author") ? json.getString("itunes:author") : "");
         episode.setMp3FileUrl(json.getJSONObject("enclosure").getString("url"));
         return episode;
@@ -202,7 +203,7 @@ public class NetworkUtils {
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_COVER_IMG, jsonObject.getString("logo_url"));
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER, "gpodder.net");
             if (jsonObject.getString("url") == null || jsonObject.getString("url").isEmpty())
-                contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, UUID.randomUUID().toString());
+                contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, UUID.randomUUID().toString().replaceAll("-",""));
             else
                 contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, jsonObject.getString("url"));
 
@@ -226,7 +227,7 @@ public class NetworkUtils {
             podcast.setProvider("gpodder.net");
             podcast.setPodcastId(jsonObject.getString("url"));
             if (podcast.getPodcastId() == null || podcast.getPodcastId().isEmpty())
-                podcast.setPodcastId(UUID.randomUUID().toString());
+                podcast.setPodcastId(UUID.randomUUID().toString().replaceAll("-",""));
             else
 
                 list.add(podcast);
@@ -246,7 +247,7 @@ public class NetworkUtils {
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_COVER_IMG, podcast.getCoverImage());
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_PROVIDER, "gpodder.net");
             //if (podcast.getPodcastId() == null || podcast.getPodcastId().isEmpty())
-                contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, UUID.randomUUID().toString());
+                contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, UUID.randomUUID().toString().replaceAll("-",""));
             //else
                 //contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID, podcast.getPodcastId().replaceAll(".", "").replaceAll("-", "").replaceAll(":", "").replaceAll("/", ""));
             contentValue.put(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_MAIN_SCREEEN, mainSreenTag);

@@ -1,5 +1,7 @@
 package capstone.nanodegree.udacity.com.mypodcast;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,21 +11,35 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.BottomNavigationView;
 import android.support.test.espresso.IdlingResource;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import capstone.nanodegree.udacity.com.mypodcast.IdlingResource.SimpleIdlingResource;
+import capstone.nanodegree.udacity.com.mypodcast.eventbus.MessageEvent;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.DownloadFragment;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.MainFragment;
-import capstone.nanodegree.udacity.com.mypodcast.fragment.PlayBackControlFragment;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.SubscriptionFragment;
 import capstone.nanodegree.udacity.com.mypodcast.login.LoginFragment;
+import capstone.nanodegree.udacity.com.mypodcast.service.PlayMediaService;
 import capstone.nanodegree.udacity.com.mypodcast.service.PodcastSyncUtils;
+import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
 import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,27 +50,47 @@ public class MainActivity extends AppCompatActivity {
 
     @Nullable
     SimpleIdlingResource mIdlingResource;
+    @BindView(R.id.album_art)
+    ImageView imageView;
+    @BindView(R.id.title)
+    TextView tvBottomTitle;
+    @BindView(R.id.tvSubTitle)
+    TextView subTitle;
+    @BindView(R.id.play_pause)
+    ImageButton imageButton;
+    @BindView(R.id.controls_container)
+    CardView controlsContainer;
+    MessageEvent event;
+    boolean playerNull = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         ButterKnife.bind(this);
         Intent intent = getIntent();
         if (intent != null) {
             fromEpisode = intent.getStringExtra("no_account_from_download");
+
         }
-        Log.d("oncreatecontainer:", "Yes");
+
+
+        Log.d("oncreatecontainer:", "Yes" + sharedPreferences.getString(Constant.bottom_title, null) + "|" + sharedPreferences.getString(Constant.bottom_mp3_url, null));
         getIdlingResource();
 
         PodcastSyncUtils.initialize(this);
         if (fromEpisode != null && fromEpisode.equals("1")) {
-            LoginFragment loginFragment = new LoginFragment();
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_container, loginFragment).commit();
+            if (savedInstanceState == null) {
+                LoginFragment loginFragment = new LoginFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_container, loginFragment).commit();
+            }
         } else {
-            MainFragment mainFragment = new MainFragment();
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_container, mainFragment).commit();
+            if (savedInstanceState == null) {
+                MainFragment mainFragment = new MainFragment();
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_container, mainFragment).commit();
+            }
         }
 
 
@@ -97,28 +133,85 @@ public class MainActivity extends AppCompatActivity {
         return mIdlingResource;
     }
 
+    @OnClick(R.id.play_pause)
+    public void playPauseBtnClick() {
+        Log.d("eventmsgplayer:", event.exoPlayer + "");
+        if (event != null && event.exoPlayer != null) {
+            playerNull = false;
+            if (event.state == PlaybackStateCompat.STATE_PLAYING) {
+                event.exoPlayer.setPlayWhenReady(false);
+                imageButton.setImageResource(R.drawable.exo_controls_play);
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+                int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), PlayerWidgetProvider.class));
+                PlayerWidgetProvider.updateMediaTitle(getApplicationContext(), appWidgetManager, sharedPreferences.getString(Constant.bottom_title, null), R.drawable.exo_controls_play, appWidgetIds);
+            } else {
+                imageButton.setImageResource(R.drawable.exo_controls_pause);
+                event.exoPlayer.seekTo(sharedPreferences.getLong(Constant.player_current_position, 0));
+                event.exoPlayer.setPlayWhenReady(true);
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
+                int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), PlayerWidgetProvider.class));
+                PlayerWidgetProvider.updateMediaTitle(getApplicationContext(), appWidgetManager, sharedPreferences.getString(Constant.bottom_title, null), R.drawable.exo_controls_pause, appWidgetIds);
+            }
+        }
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("onresmeContainer:", "Yes");
-        setBottomContainer();
+        bottomControlContainer();
 
     }
 
-    public void setBottomContainer() {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        Log.d("bottomTitle:", sharedPreferences.getString(Constant.bottom_title, null) + "");
-        if (sharedPreferences.getString(Constant.bottom_title, null) == null) {
-            findViewById(R.id.controls_container).setVisibility(View.GONE);
+    public void bottomControlContainer() {
+        Log.d("eventMsgBottom1:", event + "|service:" + AppUtils.isMyServiceRunning(PlayMediaService.class, this) + "|" + sharedPreferences.getString(Constant.bottom_mp3_url, null));
+        if (event == null && !AppUtils.isMyServiceRunning(PlayMediaService.class, this) && sharedPreferences.getString(Constant.bottom_mp3_url, null) != null) {
+            Log.d("eventMsgBottom1Player:", "Null");
+            playerNull = true;
+            Intent intent = new Intent(this, PlayMediaService.class);
+            intent.setAction(Constant.ACTION_NEW_URL);
+            startService(intent);
         } else {
-            findViewById(R.id.controls_container).setVisibility(View.VISIBLE);
-            Bundle bundle = new Bundle();
-            PlayBackControlFragment fragment = new PlayBackControlFragment();
-            fragment.setArguments(bundle);
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_playback_controls, fragment).commit();
+            playerNull = false;
+        }
+        if (sharedPreferences.getString(Constant.bottom_mp3_url, null) != null) {
+            Intent intent = new Intent(this, PlayMediaService.class);
+            intent.setAction(Constant.ACTION_GET_EXOPLAYER_INSTANCE);
+            startService(intent);
+
+            controlsContainer.setVisibility(View.VISIBLE);
+            Glide.with(this).load(sharedPreferences.getString(Constant.bottom_img_cover, null)).into(imageView);
+            String tit = sharedPreferences.getString(Constant.bottom_title, null);
+            tvBottomTitle.setText((tit == null || tit.isEmpty()) ? "n/a" : tit);
+            String sub = sharedPreferences.getString(Constant.bottom_sub_title, null);
+            subTitle.setText((sub == null || sub.isEmpty()) ? "n/a" : sub);
+            imageButton.setImageResource(sharedPreferences.getInt(Constant.bottom_play_pause_icon, 0));
+        } else {
+            controlsContainer.setVisibility(View.GONE);
         }
     }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void showState(MessageEvent eventMsg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                event = eventMsg;
+                if (playerNull) {
+                    event.exoPlayer.setPlayWhenReady(false);
+                }
+                if (eventMsg.state == PlaybackStateCompat.STATE_PLAYING) {
+                    imageButton.setImageResource(R.drawable.exo_controls_pause);
+                } else {
+                    imageButton.setImageResource(R.drawable.exo_controls_play);
+                }
+                Log.d("eventmsg:", eventMsg + "");
+
+            }
+        });
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,12 +235,16 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
-    public void showItuneTopListResult(String result) {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
     }
-
 }

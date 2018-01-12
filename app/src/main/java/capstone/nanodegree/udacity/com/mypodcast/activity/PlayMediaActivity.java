@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.gms.ads.AdRequest;
@@ -33,17 +34,22 @@ import com.google.android.gms.ads.MobileAds;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.parceler.Parcels;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import capstone.nanodegree.udacity.com.mypodcast.R;
+import capstone.nanodegree.udacity.com.mypodcast.eventbus.MessageEvent;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.EpisodeListFragment;
 import capstone.nanodegree.udacity.com.mypodcast.model.Episode;
 import capstone.nanodegree.udacity.com.mypodcast.service.AppWidgetPlayerIntentService;
 import capstone.nanodegree.udacity.com.mypodcast.service.PlayMediaService;
+import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
 import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
-public class PlayMediaActivity extends AppCompatActivity implements EpisodeListFragment.PlayListClickListener{
+import static capstone.nanodegree.udacity.com.mypodcast.utils.Constant.ACTION_NEW_URL;
+
+public class PlayMediaActivity extends AppCompatActivity implements EpisodeListFragment.PlayListClickListener {
     @BindView(R.id.playerView)
     SimpleExoPlayerView mPlayerView;
     //SimpleExoPlayer mExoPlayer;
@@ -74,13 +80,14 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
         Intent intent = getIntent();
         if (intent != null) {
             img = intent.getStringExtra("img");
-            episode = (Episode) intent.getExtras().getSerializable("episode_extra");
+            episode = Parcels.unwrap(intent.getParcelableExtra("episode_extra"));
         }
         toolbar.setTitle(episode.getTitle());
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
+        /*PlayMediaService ps = new PlayMediaService();
+        Log.d("exoplayervalue:", ps.getExoPlayer() + "");*/
 
         service = new PlayMediaService();
 
@@ -93,12 +100,14 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
         editor.putString("media_title", episode.getTitle());
         editor.apply();
         //initializeMediaSession();
-        Log.d("serviceplaying:", isMyServiceRunning(PlayMediaService.class) + "" + "|img" + img);
-        if (isMyServiceRunning(PlayMediaService.class)) {
+        Log.d("serviceplaying:", AppUtils.isMyServiceRunning(PlayMediaService.class,this) + "" + "|img" + img);
+        setBottomValues();
+        if (AppUtils.isMyServiceRunning(PlayMediaService.class,this)) {
             Intent intent1 = new Intent(this, PlayMediaService.class);
             stopService(intent1);
         }
         Intent intent2 = new Intent(this, PlayMediaService.class);
+        intent2.setAction(Constant.ACTION_NEW_URL);
         intent2.putExtra("mp3_url", episode.getMp3FileUrl());
         startService(intent2);
 
@@ -135,33 +144,25 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
     }
 
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
+
 
 
     //This is to initialize player with the media source
 
-    private void initializePlayer(SimpleExoPlayer exoPlayer) {
-        Log.d("playerfromservice:", exoPlayer + "");
-        mPlayerView.setPlayer(exoPlayer);
+    private void initializePlayer(MessageEvent event) {
+        Log.d("playerfromservice:", event.exoPlayer + "");
+        mPlayerView.setPlayer(event.exoPlayer);
         mPlayerView.setControllerShowTimeoutMs(0);
         mPlayerView.setControllerHideOnTouch(false);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void showPlayer(SimpleExoPlayer exoPlayer) {
+    public void showPlayer(MessageEvent event) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d("playerservicetag:", exoPlayer + "");
-                initializePlayer(exoPlayer);
+                Log.d("playerservicetag:", event.exoPlayer + "");
+                initializePlayer(event);
             }
         });
     }
@@ -169,7 +170,8 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
+        if (EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
         //releasePlayer();
         //mMediaSession.setActive(false);
         setBottomValues();
@@ -182,6 +184,12 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
         setBottomValues();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setBottomValues();
+    }
+
     public void setBottomValues() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(Constant.bottom_play_pause_icon, R.drawable.exo_controls_pause);
@@ -189,6 +197,11 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
         editor.putString(Constant.bottom_title, episode.getTitle());
         editor.putString(Constant.bottom_sub_title, episode.getDescription());
         editor.putString(Constant.bottom_mp3_url, episode.getMp3FileUrl());
+        ExoPlayer exoPlayer = this.mPlayerView.getPlayer();
+        if (mPlayerView.getPlayer() != null) {
+            editor.putInt(Constant.player_state, mPlayerView.getPlayer().getPlaybackState());
+            editor.putLong(Constant.player_current_position, mPlayerView.getPlayer().getCurrentPosition());
+        }
         editor.apply();
     }
 
@@ -235,7 +248,8 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
     @Override
     protected void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
     }
 
 

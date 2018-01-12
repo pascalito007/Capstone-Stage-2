@@ -44,7 +44,9 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.MainFragment;
 import capstone.nanodegree.udacity.com.mypodcast.model.User;
@@ -80,11 +82,13 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     /* A Google account object that is populated if the user signs in with Google */
     GoogleSignInAccount mGoogleAccount;
     GoogleApiClient mGoogleApiClient;
+    private Unbinder unbinder;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.activity_login, container, false);
+        unbinder = ButterKnife.bind(this,view);
         mAuth = FirebaseAuth.getInstance();
         mAuthProgressDialog = new ProgressDialog(getActivity());
         mAuthProgressDialog.setTitle(getString(R.string.progress_dialog_loading));
@@ -289,4 +293,8 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
         mGoogleApiClient.stopAutoManage(getActivity());
         mGoogleApiClient.disconnect();
     }*/
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
 }

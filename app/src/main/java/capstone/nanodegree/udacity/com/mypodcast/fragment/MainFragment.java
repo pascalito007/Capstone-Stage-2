@@ -34,6 +34,8 @@ import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity;
 import capstone.nanodegree.udacity.com.mypodcast.activity.FetchGpodderMainActivity;
 import capstone.nanodegree.udacity.com.mypodcast.activity.FetchItunePodcastActivity;
+import capstone.nanodegree.udacity.com.mypodcast.adapter.MainCategory1FragmentAdapter;
+import capstone.nanodegree.udacity.com.mypodcast.adapter.MainCategory2FragmentAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.MainFragmentAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.MainFragmentTopListAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.model.Podcast;
@@ -42,7 +44,8 @@ import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 /**
  * Created by jem001 on 04/12/2017.
  */
-public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, MainFragmentAdapter.PodcastClickListener, MainFragmentTopListAdapter.PodcastClickListener {
+public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, MainFragmentAdapter.PodcastClickListener, MainFragmentTopListAdapter.PodcastClickListener,
+        MainCategory1FragmentAdapter.PodcastClickListener, MainCategory2FragmentAdapter.PodcastClickListener {
 
     @BindView(R.id.rv_recommendations)
     RecyclerView rvRecommendations;
@@ -64,8 +67,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private Unbinder unbinder;
 
 
-
-    MainFragmentAdapter recommendationAdapter, category1Adapter, category2Adapter;
+    MainFragmentAdapter recommendationAdapter;
+    MainCategory1FragmentAdapter category1Adapter;
+    MainCategory2FragmentAdapter category2Adapter;
     MainFragmentTopListAdapter topListAdapter;
 
     private static final int RECOMMENDATIONS_LOADER_ID = 55;
@@ -80,9 +84,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_fragment, container, false);
-        unbinder =ButterKnife.bind(this,view);
+        unbinder = ButterKnife.bind(this, view);
         sp = PreferenceManager.getDefaultSharedPreferences(getContext());
-
         String email = sp.getString("email", null);
         Log.d("email:", email + "");
         MainFragmentPagerAdapter pagerAdapter = new MainFragmentPagerAdapter(getFragmentManager());
@@ -97,7 +100,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         rvRecommendations.setAdapter(recommendationAdapter);
 
         //CATEGORY LIST 1
-        category1Adapter = new MainFragmentAdapter(this);
+        category1Adapter = new MainCategory1FragmentAdapter(this);
         RecyclerView.LayoutManager layoutManagerCat1 = new GridLayoutManager(getContext(), getActivity().getResources().getInteger(R.integer.grid_column_count));
         rvCategory1.setHasFixedSize(true);
         rvCategory1.setNestedScrollingEnabled(false);
@@ -105,7 +108,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         rvCategory1.setAdapter(category1Adapter);
 
         //CATEGORY LIST 2
-        category2Adapter = new MainFragmentAdapter(this);
+        category2Adapter = new MainCategory2FragmentAdapter(this);
         RecyclerView.LayoutManager layoutManagerCat2 = new GridLayoutManager(getContext(), getActivity().getResources().getInteger(R.integer.grid_column_count));
         rvCategory2.setHasFixedSize(true);
         rvCategory2.setNestedScrollingEnabled(false);
@@ -126,7 +129,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         getLoaderManager().initLoader(SECOND_CATEGORY_LOADER_ID, null, this);
         return view;
     }
-
 
 
     @OnClick(R.id.img_itune)
@@ -159,6 +161,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                 return null;
         }
     }
+
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -196,14 +199,14 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onItemClick(Podcast podcast) {
+        Log.d("podcastcontent:", podcast + "");
         Cursor cursor = getActivity().getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcast.getPodcastId()}, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
             podcast = Podcast.getPodcastFromCursor(cursor);
         }
-        Log.d("podcastcontent:", podcast + "");
         Intent intent = new Intent(getContext(), EpisodeActivity.class);
-        intent.putExtra("podcast_extra",podcast);
+        intent.putExtra("podcast_extra", Parcels.wrap(podcast));
         startActivity(intent);
     }
 
@@ -211,7 +214,23 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onGpodderItemClickListener(Podcast podcast) {
         Log.d("podcastcontent:", podcast + "");
         Intent intent = new Intent(getContext(), EpisodeActivity.class);
-        intent.putExtra("podcast_extra",podcast);
+        intent.putExtra("podcast_extra", Parcels.wrap(podcast));
+        startActivity(intent);
+    }
+
+    @Override
+    public void onCategory2ItemClick(Podcast podcast) {
+        Log.d("podcastcontent:", podcast + "");
+        Intent intent = new Intent(getContext(), EpisodeActivity.class);
+        intent.putExtra("podcast_extra", Parcels.wrap(podcast));
+        startActivity(intent);
+    }
+
+    @Override
+    public void onCategory1ItemClick(Podcast podcast) {
+        Log.d("podcastcontent:", podcast + "");
+        Intent intent = new Intent(getContext(), EpisodeActivity.class);
+        intent.putExtra("podcast_extra", Parcels.wrap(podcast));
         startActivity(intent);
     }
 
@@ -242,7 +261,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             return 3;
         }
     }
-    @Override public void onDestroyView() {
+
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
     }

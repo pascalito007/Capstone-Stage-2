@@ -49,7 +49,7 @@ public class MyPodcastDbHelper extends SQLiteOpenHelper {
                 MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_LINK + " TEXT, " +
                 MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_MP3_URL + " TEXT, " +
                 MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_AUTHOR + " TEXT, " +
-                " UNIQUE (" + MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + ", " + MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_LINK + " ) ON CONFLICT REPLACE);";
+                " UNIQUE (" + MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + ", " + MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_MP3_URL + " ) ON CONFLICT REPLACE);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_PODCAST_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_EPISODE_TABLE);

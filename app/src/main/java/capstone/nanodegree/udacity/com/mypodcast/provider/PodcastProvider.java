@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 /**
  * Created by jem001 on 04/01/2018.
@@ -26,7 +27,7 @@ public class PodcastProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MyPodcastContract.PODCAST_CONTENT_AUTORITY;
         matcher.addURI(authority, MyPodcastContract.PATH_PODCAST, CODE_PODCAST_LIST);
-        matcher.addURI(authority, MyPodcastContract.PATH_PODCAST + "/#", CODE_PODCAST_LIST_WITH_PODCAST_ID);
+        matcher.addURI(authority, MyPodcastContract.PATH_PODCAST + "/*", CODE_PODCAST_LIST_WITH_PODCAST_ID);
         return matcher;
     }
 
@@ -135,7 +136,7 @@ public class PodcastProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        /*final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
             case CODE_PODCAST_LIST_WITH_PODCAST_ID:
                 int rowsUpdated = 0;
@@ -144,8 +145,50 @@ public class PodcastProvider extends ContentProvider {
                     getContext().getContentResolver().notifyChange(uri, null);
                     return rowsUpdated;
                 }
+            case CODE_PODCAST_LIST:
+                int rowsUpdated2 = 0;
+                rowsUpdated2 = db.update(MyPodcastContract.MyPodcastEntry.PODCAST_TABLE_NAME, contentValues, selection, selectionArgs);
+                if (rowsUpdated2 > 0) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                    return rowsUpdated2;
+                }
             default:
-                return 0;
+                int rowsUpdated3 = 0;
+                rowsUpdated3 = db.update(MyPodcastContract.MyPodcastEntry.PODCAST_TABLE_NAME, contentValues, selection, selectionArgs);
+                if (rowsUpdated3 > 0) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                }
+                return rowsUpdated3;
+        }*/
+
+        int uriType = sUriMatcher.match(uri);
+        SQLiteDatabase sqlDB = mOpenHelper.getWritableDatabase();
+        int rowsUpdated = 0;
+        switch (uriType) {
+            case CODE_PODCAST_LIST:
+                rowsUpdated = sqlDB.update(MyPodcastContract.MyPodcastEntry.PODCAST_TABLE_NAME,
+                        contentValues,
+                        selection,
+                        selectionArgs);
+                break;
+            case CODE_PODCAST_LIST_WITH_PODCAST_ID:
+                String id = uri.getLastPathSegment();
+                if (TextUtils.isEmpty(selection)) {
+                    rowsUpdated = sqlDB.update(MyPodcastContract.MyPodcastEntry.PODCAST_TABLE_NAME,
+                            contentValues,
+                            selection,
+                            selectionArgs);
+                } else {
+                    rowsUpdated = sqlDB.update(MyPodcastContract.MyPodcastEntry.PODCAST_TABLE_NAME,
+                            contentValues,
+                            selection,
+                            selectionArgs);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown URI: " + uri);
         }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return rowsUpdated;
     }
 }

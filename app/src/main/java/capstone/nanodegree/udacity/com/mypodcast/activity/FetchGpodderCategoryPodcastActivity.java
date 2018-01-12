@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import org.parceler.Parcels;
+
 import butterknife.ButterKnife;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.GpodderPopularFragment;
@@ -23,7 +25,7 @@ public class FetchGpodderCategoryPodcastActivity extends AppCompatActivity {
             finish();
         Intent intent=getIntent();
         if (intent!=null)
-            category=intent.getParcelableExtra("category_extra");
+            category= Parcels.unwrap(intent.getParcelableExtra("category_extra"));
 
         GpodderPopularFragment fragment = new GpodderPopularFragment();
         Bundle bundle=new Bundle();

@@ -28,15 +28,17 @@ public class FeedItemsBackGroundTask extends AsyncTask<Void, Void, String> {
         XmlToJson xmlToJson = null;
         if (result != null) {
             xmlToJson = new XmlToJson.Builder(result, null).build();
+            return xmlToJson.toString();
         }
-        return xmlToJson.toString();
+        return null;
     }
 
     @Override
     protected void onPostExecute(String result) {
 
         try {
-            listener.showResultItems(result);
+            if (result != null)
+                listener.showResultItems(result);
         } catch (JSONException e) {
             e.printStackTrace();
         }
