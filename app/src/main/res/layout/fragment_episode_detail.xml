@@ -9,7 +9,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="@dimen/tree_handred_twenty_dp"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
@@ -32,6 +32,7 @@
                 <ImageView
                     android:id="@+id/photo"
                     android:layout_width="match_parent"
+                    android:contentDescription="@string/podcast_image"
                     android:layout_height="match_parent"
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop" />

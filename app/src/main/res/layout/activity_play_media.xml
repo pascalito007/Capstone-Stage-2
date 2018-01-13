@@ -7,6 +7,7 @@
     tools:context="capstone.nanodegree.udacity.com.mypodcast.activity.PlayMediaActivity">
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -25,24 +26,24 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.google.android.gms.ads.AdView
+        <!--<com.google.android.gms.ads.AdView
             android:id="@+id/adView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
+            app:adSize="BANNER"
+            app:adUnitId="@string/banner_ad_unit_id"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:adSize="BANNER"
-            app:adUnitId="@string/banner_ad_unit_id"></com.google.android.gms.ads.AdView>
+            app:layout_constraintTop_toTopOf="parent" />-->
 
         <com.google.android.exoplayer2.ui.SimpleExoPlayerView
             android:id="@+id/playerView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="@dimen/zero_dp"
+            android:layout_height="@dimen/zero_dp"
             app:layout_constraintBottom_toTopOf="@+id/card_items"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/adView" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar
             android:id="@+id/pb_loading_indicator"
@@ -58,7 +59,7 @@
             android:id="@+id/card_items"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardElevation="4dp"
+            app:cardElevation="@dimen/four_dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -81,9 +82,9 @@
                         android:id="@+id/subscription"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginStart="20dp"
-                        android:contentDescription="Subscription Icon"
+                        android:layout_marginLeft="@dimen/twenty_dp"
+                        android:layout_marginStart="@dimen/twenty_dp"
+                        android:contentDescription="@string/subscription_icon_img"
                         android:src="@drawable/ic_favorit"
                         android:tint="@color/primary" />
 
@@ -93,7 +94,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentTop="true"
                         android:layout_centerHorizontal="true"
-                        android:contentDescription="Download Button"
+                        android:contentDescription="@string/download_button_img"
                         android:src="@drawable/ic_drawer_download"
                         android:tint="@color/primary" />
 
@@ -104,9 +105,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentTop="true"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginRight="20dp"
-                        android:contentDescription="Share Button"
+                        android:layout_marginEnd="@dimen/twenty_dp"
+                        android:layout_marginRight="@dimen/twenty_dp"
+                        android:contentDescription="@string/share_button_img"
                         android:src="@drawable/ic_share"
                         android:tint="@color/primary" />
 
@@ -116,8 +117,8 @@
                 <View
                     android:id="@+id/divider"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="@dimen/one_dp"
+                    android:layout_marginTop="@dimen/ten_dp"
                     android:background="@color/md_blue_grey_100"
 
                     />
@@ -130,8 +131,8 @@
                         android:id="@+id/tv_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:layout_marginTop="5dp"
+                        android:layout_margin="@dimen/ten_dp"
+                        android:layout_marginTop="@dimen/five_dp"
                         android:text="This is a description and should be replease with the original one" />
                 </ScrollView>
 

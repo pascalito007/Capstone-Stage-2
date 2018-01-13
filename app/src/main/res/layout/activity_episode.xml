@@ -7,11 +7,10 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="@dimen/two_handred_fifty_dp"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:contentScrim="?attr/colorPrimary"
@@ -22,8 +21,8 @@
                 android:id="@+id/podcast_img"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:contentDescription="@string/podcast_image_blur_label"
                 android:scaleType="centerCrop"
-                android:contentDescription="Podcast Image Blur"
                 app:layout_collapseMode="pin" />
 
             <RelativeLayout
@@ -33,21 +32,21 @@
 
                 <ImageView
                     android:id="@+id/podcast_img_clean"
-                    android:layout_width="150dp"
-                    android:contentDescription="Podcast Image"
-                    android:layout_height="150dp"
-                    android:layout_marginLeft="10dp" />
+                    android:layout_width="@dimen/one_handred_fifty_dp"
+                    android:layout_height="@dimen/one_handred_fifty_dp"
+                    android:layout_marginLeft="@dimen/ten_dp"
+                    android:contentDescription="@string/podcast_image_label" />
 
                 <TextView
                     android:id="@+id/podcast_cover_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginLeft="@dimen/five_dp"
                     android:layout_toEndOf="@+id/podcast_img_clean"
                     android:layout_toRightOf="@+id/podcast_img_clean"
                     android:text="Affaires sensibles - Franc Inter"
                     android:textColor="@color/md_white_1000"
-                    android:textSize="16sp"
+                    android:textSize="@dimen/sixteen_sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -57,10 +56,10 @@
                     android:layout_alignLeft="@+id/podcast_cover_title"
                     android:layout_alignStart="@+id/podcast_cover_title"
                     android:layout_below="@+id/podcast_cover_title"
-                    android:layout_marginTop="10dp"
-                    android:text="Franc Inter"
+                    android:layout_marginTop="@dimen/ten_dp"
+                    android:text="@string/franc_inter_label"
                     android:textColor="@color/md_white_1000"
-                    android:textSize="16sp" />
+                    android:textSize="@dimen/sixteen_sp" />
             </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
@@ -101,6 +100,18 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_action_refresh"
+                android:tint="@color/accent"
+                android:visibility="gone"
+                android:id="@+id/refresh"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </android.support.constraint.ConstraintLayout>
 
 
@@ -112,8 +123,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        app:layout_anchor="@+id/app_bar"
         android:contentDescription="Subscription Button"
+        app:layout_anchor="@+id/app_bar"
         app:layout_anchorGravity="right|bottom"
         app:srcCompat="@drawable/ic_subscribe_notification_active" />
 

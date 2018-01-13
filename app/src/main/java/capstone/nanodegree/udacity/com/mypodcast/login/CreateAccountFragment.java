@@ -34,6 +34,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.model.User;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 
 /**
@@ -111,7 +112,7 @@ public class CreateAccountFragment extends Fragment {
                 } else {
                     mAuthProgressDialog.dismiss();
                     Toast.makeText(getContext(),
-                            "Failed:"+task.getException(),
+                            getString(R.string.failed_value)+task.getException(),
                             Toast.LENGTH_SHORT).show();
 
                 }
@@ -126,13 +127,13 @@ public class CreateAccountFragment extends Fragment {
             final String encodedEmail = mUserEmail.replace(".", ",");
             String test = encodedEmail.replace(",", ".");
             Log.d("original:", test);
-            final DatabaseReference userLocation = FirebaseDatabase.getInstance().getReference("users").child(encodedEmail);
+            final DatabaseReference userLocation = FirebaseDatabase.getInstance().getReference(Constant.users).child(encodedEmail);
             userLocation.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.getValue() == null) {
                         HashMap<String, Object> timestampJoined = new HashMap<>();
-                        timestampJoined.put("timestamp", ServerValue.TIMESTAMP);
+                        timestampJoined.put(Constant.timestamp, ServerValue.TIMESTAMP);
 
                         User newUser = new User(mUserName, encodedEmail, timestampJoined);
                         userLocation.setValue(newUser);
@@ -153,13 +154,13 @@ public class CreateAccountFragment extends Fragment {
                                 LoginFragment login = new LoginFragment();
                                 getFragmentManager().beginTransaction().replace(R.id.main_container, login).commit();
                                 Toast.makeText(getContext(),
-                                        "Verification email sent to " + user.getEmail(),
+                                        getString(R.string.verification_sent) + user.getEmail(),
                                         Toast.LENGTH_SHORT).show();
                                 Log.d(LOG_TAG, "sendEmailVerification:" + task.isSuccessful());
                             } else {
                                 Log.e(LOG_TAG, "sendEmailVerification", task.getException());
                                 Toast.makeText(getContext(),
-                                        "Failed to send verification email.",
+                                        R.string.faild_to_send,
                                         Toast.LENGTH_SHORT).show();
                             }
                         }

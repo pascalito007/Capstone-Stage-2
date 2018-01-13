@@ -28,7 +28,7 @@ import capstone.nanodegree.udacity.com.mypodcast.IdlingResource.SimpleIdlingReso
 public class MainScreenDataInstrumentedTest {
 
     @Rule
-    public ActivityTestRule<MainActivity_> mActivityTestRule = new ActivityTestRule<>(MainActivity_.class);
+    public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
     private IdlingResource mIdlingResource;
 
     @Before
@@ -40,7 +40,7 @@ public class MainScreenDataInstrumentedTest {
 
     @Test
     public void idlingResourceTest() {
-        Espresso.onView(ViewMatchers.withId(R.id.rv_recommendations)).perform(RecyclerViewActions.actionOnItemAtPosition(1, ViewActions.click()));
+        Espresso.onView(ViewMatchers.withId(R.id.rv_recommendations)).perform(RecyclerViewActions.actionOnItemAtPosition(3, ViewActions.click()));
         Espresso.onView(ViewMatchers.withId(R.id.podcast_img_clean)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
     }
 

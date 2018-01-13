@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+    android:layout_margin="@dimen/five_dp">
 
     <ImageView
         android:id="@+id/img_podcast"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/podcast_img"
+        android:contentDescription="@string/podcast_image"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -17,7 +18,7 @@
         android:id="@+id/tv_podcast_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="@dimen/five_dp"
         android:text="La Dev Team"
         android:textColor="@color/md_black_1000"
         app:layout_constraintLeft_toLeftOf="@+id/img_podcast"
@@ -27,7 +28,6 @@
         android:id="@+id/tv_podcast_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
         app:layout_constraintLeft_toLeftOf="@+id/tv_podcast_title"
         app:layout_constraintTop_toBottomOf="@+id/tv_podcast_title" />
 

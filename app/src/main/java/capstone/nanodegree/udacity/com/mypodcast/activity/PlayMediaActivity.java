@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -52,16 +53,12 @@ import static capstone.nanodegree.udacity.com.mypodcast.utils.Constant.ACTION_NE
 public class PlayMediaActivity extends AppCompatActivity implements EpisodeListFragment.PlayListClickListener {
     @BindView(R.id.playerView)
     SimpleExoPlayerView mPlayerView;
-    //SimpleExoPlayer mExoPlayer;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    Episode episode;
-    String img;
+    public static Episode episode;
+    public static String img;
     @BindView(R.id.tv_description)
     TextView description;
-    //private static MediaSessionCompat mMediaSession;
-    //private PlaybackStateCompat.Builder mStateBuilder;
-    //private NotificationManager mNotificationManager;
     @BindView(R.id.pb_loading_indicator)
     ProgressBar pbLoadingIndicator;
 
@@ -79,15 +76,14 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
 
         Intent intent = getIntent();
         if (intent != null) {
-            img = intent.getStringExtra("img");
-            episode = Parcels.unwrap(intent.getParcelableExtra("episode_extra"));
+            img = intent.getStringExtra(Constant.img);
+            episode = Parcels.unwrap(intent.getParcelableExtra(Constant.episode_extra));
         }
+
         toolbar.setTitle(episode.getTitle());
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        /*PlayMediaService ps = new PlayMediaService();
-        Log.d("exoplayervalue:", ps.getExoPlayer() + "");*/
 
         service = new PlayMediaService();
 
@@ -97,9 +93,8 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
             description.setText(Html.fromHtml(episode.getFullDescription()));
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("media_title", episode.getTitle());
+        editor.putString(Constant.media_title, episode.getTitle());
         editor.apply();
-        //initializeMediaSession();
         Log.d("serviceplaying:", AppUtils.isMyServiceRunning(PlayMediaService.class,this) + "" + "|img" + img);
         setBottomValues();
         if (AppUtils.isMyServiceRunning(PlayMediaService.class,this)) {
@@ -108,7 +103,7 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
         }
         Intent intent2 = new Intent(this, PlayMediaService.class);
         intent2.setAction(Constant.ACTION_NEW_URL);
-        intent2.putExtra("mp3_url", episode.getMp3FileUrl());
+        intent2.putExtra(Constant.mp3_url, episode.getMp3FileUrl());
         startService(intent2);
 
 
@@ -123,7 +118,7 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
 
             EpisodeListFragment episodeListFragment = new EpisodeListFragment();
             Bundle bundle = new Bundle();
-            bundle.putString("podcast_id_extra", episode.getPodcastId());
+            bundle.putString(Constant.podcast_id_extra, episode.getPodcastId());
             episodeListFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction().add(R.id.container, episodeListFragment).commit();
         }
@@ -132,17 +127,16 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
         AppWidgetPlayerIntentService.startActionUpdateMediaTitle(this);
 
         //Set up for pre-fetching interstitial ad request
-        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        MobileAds.initialize(this, getString(R.string.add_init_id));
 
 
         AdRequest adRequest = new AdRequest.Builder()
                 //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .addTestDevice("FA9F653AECE1C006CA7AB09735E30CD9")
+                .addTestDevice(getString(R.string.device_id))
                 .build();
         mAdView.loadAd(adRequest);
 
     }
-
 
 
 
@@ -208,7 +202,7 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
 
     @Override
     public void onPlayItemClick(Episode episode) {
-        Toast.makeText(this, "episode clicked:" + episode.getTitle(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, getString(R.string.episode_clicked) + episode.getTitle(), Toast.LENGTH_LONG).show();
         this.episode = episode;
         setTitle(episode.getTitle());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -237,7 +231,8 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             Intent returnIntent = new Intent();
-            returnIntent.putExtra("podcast_id", episode.getPodcastId());
+            returnIntent.putExtra(Constant.podcast_id, episode.getPodcastId());
+            returnIntent.putExtra(Constant.img,img);
             setResult(Activity.RESULT_OK, returnIntent);
             finish();
             return true;

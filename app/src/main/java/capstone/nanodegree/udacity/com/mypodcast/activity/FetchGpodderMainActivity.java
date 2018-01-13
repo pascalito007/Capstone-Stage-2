@@ -57,9 +57,9 @@ public class FetchGpodderMainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "MOST POPULAR";
+                    return getString(R.string.most_popular);
                 case 1:
-                    return "CATEGORY";
+                    return getString(R.string.category);
                 default:
                     return super.getPageTitle(position);
             }

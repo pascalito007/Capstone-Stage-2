@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="capstone.nanodegree.udacity.com.mypodcast">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+
+    <application
+        android:name=".utils.AppConfig"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.FetchItunePodcastActivity"
+            android:label="@string/title_activity_fetch_itune"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="capstone.nanodegree.udacity.com.mypodcast.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activity.EpisodeActivity"
+            android:label="@string/title_activity_fetch_itune_episode"
+            android:parentActivityName=".activity.FetchItunePodcastActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="capstone.nanodegree.udacity.com.mypodcast.activity.FetchItunePodcastActivity" />
+        </activity>
+        <activity
+            android:name=".activity.FetchGpodderMainActivity"
+            android:label="@string/title_activity_fetch_gpodder_main"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="capstone.nanodegree.udacity.com.mypodcast.MainActivity" />
+        </activity>
+
+
+        <provider
+            android:name=".provider.EpisodeProvider"
+            android:authorities="capstone.nanodegree.udacity.com.mypodcast.episode"
+            android:exported="false" />
+        <provider
+            android:name=".provider.PodcastProvider"
+            android:authorities="capstone.nanodegree.udacity.com.mypodcast.podcast"
+            android:exported="false" />
+
+        <service
+            android:name=".service.PodcastSyncIntentService"
+            android:exported="false" />
+        <service
+            android:name=".service.PodcastFirebaseJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".service.DownloadService"
+            android:exported="false" />
+        <service
+            android:name=".service.AppWidgetPlayerIntentService"
+            android:exported="false" />
+        <service
+            android:name=".service.PlayMediaService"
+            android:exported="false" />
+
+        <activity
+            android:name=".activity.PlayMediaActivity"
+            android:label="@string/title_activity_play_media"
+            android:launchMode="singleTop"
+            android:parentActivityName=".activity.EpisodeActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity" />
+        </activity>
+
+        <receiver android:name=".activity.PlayMediaActivity$MediaReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".activity.EpisodeDetailsActivity"
+            android:label="@string/title_activity_episode_details"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="capstone.nanodegree.udacity.com.mypodcast.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activity.FetchGpodderCategoryPodcastActivity"
+            android:label="@string/title_activity_fetch_gpodder_category_podcast"
+            android:parentActivityName=".activity.FetchGpodderMainActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="capstone.nanodegree.udacity.com.mypodcast.activity.FetchGpodderMainActivity" />
+        </activity>
+
+        <receiver android:name=".PlayerWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/player_widget_info" />
+        </receiver>
+        <!-- This meta-data tag is required to use Google Play Services. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <!-- Include the AdActivity configChanges and theme. -->
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:theme="@android:style/Theme.Translucent" />
+    </application>
+
+</manifest>

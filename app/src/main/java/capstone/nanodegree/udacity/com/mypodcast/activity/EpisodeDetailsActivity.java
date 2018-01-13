@@ -17,6 +17,7 @@ import butterknife.ButterKnife;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.EpisodeDetailsFragment;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 public class EpisodeDetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -24,10 +25,7 @@ public class EpisodeDetailsActivity extends AppCompatActivity implements LoaderM
     ViewPager mPager;
     Cursor mCursor;
     MyPagerAdapter myPagerAdapter;
-    //@InstanceState
     long selectedItemId;
-    //@Extra("episode_id")
-    //@InstanceState
     Long episode_id;
     private static final int EPISODE_DETAILS_LOAD_ID = 77;
 
@@ -69,7 +67,7 @@ public class EpisodeDetailsActivity extends AppCompatActivity implements LoaderM
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case EPISODE_DETAILS_LOAD_ID:
-                return new CursorLoader(this, MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_DOWNLOAD_FLAG+" = ?", new String[]{"Yes"}, null);
+                return new CursorLoader(this, MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_DOWNLOAD_FLAG+" = ?", new String[]{getString(R.string.yes)}, null);
             default:
                 return null;
         }
@@ -113,9 +111,8 @@ public class EpisodeDetailsActivity extends AppCompatActivity implements LoaderM
             mCursor.moveToPosition(position);
             EpisodeDetailsFragment fragment=new EpisodeDetailsFragment();
             Bundle bundle=new Bundle();
-            bundle.putLong("ARG_ITEM_ID",mCursor.getLong(mCursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_ID)));
+            bundle.putLong(Constant.ARG_ITEM_ID,mCursor.getLong(mCursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_ID)));
             fragment.setArguments(bundle);
-            //EpisodeDetailsFragment fragment = EpisodeDetailsFragment_.builder().arg("ARG_ITEM_ID", mCursor.getLong(mCursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_ID))).build();
             return fragment;
         }
 

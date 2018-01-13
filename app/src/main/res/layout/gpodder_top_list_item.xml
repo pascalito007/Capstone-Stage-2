@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp">
+    android:layout_margin="@dimen/ten_dp">
 
     <ImageView
         android:id="@+id/img_gpodder_top"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="@dimen/seventy_five_dp"
+        android:layout_height="@dimen/seventy_five_dp"
         android:scaleType="fitXY"
+        android:contentDescription="@string/podcast_image_label"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:srcCompat="@drawable/podcast_img" />
@@ -20,17 +19,17 @@
         android:id="@+id/tv_gpodder_top_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Linux Outlaws"
+        android:text="@string/linux_outlaws"
         app:layout_constraintLeft_toRightOf="@+id/img_gpodder_top"
         app:layout_constraintTop_toTopOf="@+id/img_gpodder_top"
-        android:layout_marginLeft="5dp"/>
+        android:layout_marginLeft="@dimen/five_dp"/>
 
     <TextView
         android:id="@+id/tv_gpodder_top_feed_url"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/zero_dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="http://feeds.feedburner.com/linuxoutlws"
+        android:layout_marginTop="@dimen/five_dp"
+        android:text="@string/feed_url"
         app:layout_constraintBottom_toBottomOf="@id/img_gpodder_top"
         app:layout_constraintLeft_toLeftOf="@+id/tv_gpodder_top_title"
         app:layout_constraintRight_toLeftOf="@+id/img_feed"
@@ -40,6 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/img_feed"
+        android:contentDescription="@string/subscribers_image"
         android:src="@drawable/ic_drawer_feed"
         app:layout_constraintBottom_toBottomOf="@+id/tv_gpodder_top_feed_url"
         app:layout_constraintRight_toRightOf="@+id/tv_feed_count"
@@ -51,7 +51,7 @@
         android:id="@+id/tv_feed_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="3321"
+        android:text="@string/subscribers_count"
         app:layout_constraintBottom_toBottomOf="@+id/img_feed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/img_feed"

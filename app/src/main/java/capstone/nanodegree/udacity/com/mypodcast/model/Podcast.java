@@ -29,6 +29,19 @@ public class Podcast{
     public Podcast() {
     }
 
+    public Podcast(String podcastId, String provider, String title, String artiste, String coverImage, String author, String subscribers, String feedCount, String feedUrl, String subscribeFlag) {
+        this.podcastId = podcastId;
+        this.provider = provider;
+        this.title = title;
+        this.artiste = artiste;
+        this.coverImage = coverImage;
+        this.author = author;
+        this.subscribers = subscribers;
+        this.feedCount = feedCount;
+        this.feedUrl = feedUrl;
+        this.subscribeFlag = subscribeFlag;
+    }
+
     public String getFeedCount() {
         return feedCount;
     }

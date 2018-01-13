@@ -28,6 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 /**
  * Created by jem001 on 04/12/2017.
@@ -57,7 +58,7 @@ public class EpisodeDetailsFragment extends Fragment implements LoaderManager.Lo
         View view= inflater.inflate(R.layout.fragment_episode_detail, container, false);
         unbinder =ButterKnife.bind(this,view);
         Bundle bundle=getArguments();
-        ARG_ITEM_ID=bundle.getLong("ARG_ITEM_ID");
+        ARG_ITEM_ID=bundle.getLong(Constant.ARG_ITEM_ID);
         if (ARG_ITEM_ID != null) {
             mItemId = ARG_ITEM_ID;
             getLoaderManager().initLoader(EPISODE_LOAD_ID, null, this);

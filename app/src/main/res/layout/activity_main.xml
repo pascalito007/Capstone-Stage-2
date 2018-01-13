@@ -31,13 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector"
-            app:cardElevation="8dp">
-
-            <!--<FrameLayout
-                android:id="@+id/fragment_playback_controls"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:layout="@layout/fragment_playback_controls" />-->
+            app:cardElevation="@dimen/height_dp">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -46,8 +40,8 @@
 
                 <ImageView
                     android:id="@+id/album_art"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="@dimen/sixty_four_dp"
+                    android:layout_height="@dimen/sixty_four_dp"
                     android:contentDescription="@string/currently_playing_song"
                     android:scaleType="centerCrop"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -65,8 +59,8 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:layout_toRightOf="@+id/album_art"
                     android:layout_toLeftOf="@+id/play_pause"
-                    android:text="The Best Music EVAH1111 THE BEST"
-                    tools:text="The Best Music EVAH1111 THE BEST" />
+                    android:text="@string/title_label"
+                    tools:text="@string/title_label" />
 
                 <TextView
                     android:id="@+id/tvSubTitle"
@@ -78,16 +72,16 @@
                     android:layout_toRightOf="@id/album_art"
                     android:layout_below="@+id/title"
                     android:layout_toLeftOf="@+id/play_pause"
-                    android:text="John Doe and Band"
-                    tools:text="John Doe and Band" />
+                    android:text="@string/subtitle_label"
+                    tools:text="@string/subtitle_label" />
 
                 <ImageButton
                     android:id="@+id/play_pause"
                     android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_height="@dimen/fifty_dp"
                     android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/play_pause"
-                    android:padding="8dp"
+                    android:padding="@dimen/height_dp"
                     android:src="@drawable/ic_play"
                     android:tint="@color/accent"
                     android:tintMode="src_in"

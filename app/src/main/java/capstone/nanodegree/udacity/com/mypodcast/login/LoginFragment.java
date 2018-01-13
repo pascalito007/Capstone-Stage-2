@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,11 +22,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -50,6 +53,7 @@ import butterknife.Unbinder;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.MainFragment;
 import capstone.nanodegree.udacity.com.mypodcast.model.User;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 /**
  * Represents Sign in screen and functionality of the app
@@ -57,7 +61,6 @@ import capstone.nanodegree.udacity.com.mypodcast.model.User;
 public class LoginFragment extends Fragment implements GoogleApiClient.OnConnectionFailedListener {
 
     private static final String LOG_TAG = LoginFragment.class.getSimpleName();
-    /* A dialog that is presented until the Firebase authentication finished. */
     private ProgressDialog mAuthProgressDialog;
     @BindView(R.id.edit_text_email)
     EditText mEditTextEmailInput;
@@ -87,8 +90,8 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view= inflater.inflate(R.layout.activity_login, container, false);
-        unbinder = ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.activity_login, container, false);
+        unbinder = ButterKnife.bind(this, view);
         mAuth = FirebaseAuth.getInstance();
         mAuthProgressDialog = new ProgressDialog(getActivity());
         mAuthProgressDialog.setTitle(getString(R.string.progress_dialog_loading));
@@ -115,8 +118,6 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity()).enableAutoManage(getActivity(), this).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
         return view;
     }
-
-
 
 
     /**
@@ -154,19 +155,19 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    Log.d("success:", task.toString());
+                    Log.d("successlogin:", task.toString());
                     FirebaseUser user = mAuth.getCurrentUser();
                     if (user.isEmailVerified()) {
                         MainFragment mainFragment = new MainFragment();
                         getFragmentManager().beginTransaction().replace(R.id.main_container, mainFragment).commit();
                         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
                         SharedPreferences.Editor spe = sp.edit();
-                        spe.putString("email", user.getEmail().toLowerCase());
+                        spe.putString(Constant.email, user.getEmail().toLowerCase());
                         spe.apply();
                         //Log.d(LOG_TAG, "providerdatainfo:" + user.getProviderId() + "|" + user.getProviderData().get(0).toString());
                     } else {
                         Toast.makeText(getContext(),
-                                "Email not vérified. Please create account and verify the email" + user.getEmail(),
+                                getString(R.string.email_not_verified) + user.getEmail(),
                                 Toast.LENGTH_SHORT).show();
                     }
 
@@ -208,6 +209,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
         super.onActivityResult(requestCode, resultCode, data);
         /* Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...); */
         if (requestCode == RC_GOOGLE_LOGIN) {
+
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             if (result.isSuccess()) {
                 mGoogleAccount = result.getSignInAccount();
@@ -225,19 +227,19 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
                                         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
                                         SharedPreferences.Editor spe = sp.edit();
                                         if (mGoogleApiClient.isConnected()) {
-                                            spe.putString("email", user.getEmail().toLowerCase());
+                                            spe.putString(Constant.email, user.getEmail().toLowerCase());
                                             spe.apply();
 
                                         }
                                         String mEncodedEmail = user.getEmail().replace(".", ",");
                                         String userName = user.getDisplayName();
-                                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(mEncodedEmail);
+                                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(Constant.users).child(mEncodedEmail);
                                         ref.addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
                                                 if (dataSnapshot.getValue() == null) {
                                                     HashMap<String, Object> timestampJoined = new HashMap<>();
-                                                    timestampJoined.put("timestamp", ServerValue.TIMESTAMP);
+                                                    timestampJoined.put(Constant.timestamp, ServerValue.TIMESTAMP);
 
                                                     User newUser = new User(userName, mEncodedEmail, timestampJoined);
                                                     ref.setValue(newUser);
@@ -264,10 +266,41 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
                             }
                         });
             } else {
+                Log.d(LOG_TAG, "failed:" + result.toString());
                 mAuthProgressDialog.dismiss();
             }
         }
 
+    }
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(LOG_TAG, "firebaseAuthWithGoogle:" + acct.getId());
+        // [START_EXCLUDE silent]
+        mAuthProgressDialog.show();
+        // [END_EXCLUDE]
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(LOG_TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Log.d(LOG_TAG, user.getDisplayName() + "|" + user.getEmail() + "|" + user.getPhotoUrl().toString());
+                            //updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(LOG_TAG, "signInWithCredential:failure", task.getException());
+                            Snackbar.make(mEditTextPasswordInput, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                        }
+
+                        // [START_EXCLUDE]
+                        mAuthProgressDialog.dismiss();
+                        // [END_EXCLUDE]
+                    }
+                });
     }
 
 
@@ -293,7 +326,8 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
         mGoogleApiClient.stopAutoManage(getActivity());
         mGoogleApiClient.disconnect();
     }*/
-    @Override public void onDestroyView() {
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
     }

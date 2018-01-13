@@ -55,7 +55,8 @@ public class GpodderPopularFragment extends Fragment implements GpodderTopPodcas
         View view= inflater.inflate(R.layout.gpodder_fragment, container, false);
         unbinder =ButterKnife.bind(this,view);
         Bundle bundle=getArguments();
-        tag=bundle.getString("tag");
+        if (bundle!=null)
+        tag=bundle.getString(Constant.tag);
         pb_loading_indicator.setVisibility(View.VISIBLE);
         new GpodderTopPodcastTask().execute();
         adapter = new GpodderTopPodcastAdapter(this);
@@ -69,9 +70,9 @@ public class GpodderPopularFragment extends Fragment implements GpodderTopPodcas
 
     @Override
     public void onItemClick(Podcast podcast) {
-        podcast.setProvider("gpodder.net");
+        podcast.setProvider(Constant.gpodder_net);
         Intent intent=new Intent(getContext(),EpisodeActivity.class);
-        intent.putExtra("podcast_extra",Parcels.wrap(podcast));
+        intent.putExtra(Constant.podcast_extra,Parcels.wrap(podcast));
         startActivity(intent);
     }
 
@@ -83,9 +84,9 @@ public class GpodderPopularFragment extends Fragment implements GpodderTopPodcas
             OkHttpClient client = new OkHttpClient();
             Request request;
             if (tag != null && !tag.isEmpty()) {
-                Log.d("backgroundfromcategory:", Constant.root_gpodder_feed_url_part + tag + "/50.json");
+                Log.d("backgroundfromcategory:", Constant.root_gpodder_feed_url_part + tag + Constant.fifty_json_value);
                 request = new Request.Builder()
-                        .url(Constant.root_gpodder_feed_url_part + tag + "/50.json")
+                        .url(Constant.root_gpodder_feed_url_part + tag + Constant.fifty_json_value)
                         .build();
             } else {
                 Log.d("backgroundfromtoplist:",gpodder_top_podcast_url);

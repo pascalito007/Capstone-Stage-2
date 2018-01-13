@@ -98,9 +98,9 @@ public class FetchItunePodcastActivity extends AppCompatActivity implements Itun
 
     @Override
     public void onItemClick(Podcast podcast) {
-        podcast.setProvider("itunes");
+        podcast.setProvider(Constant.itunes);
         Intent intent=new Intent(this,EpisodeActivity.class);
-        intent.putExtra("podcast_extra",Parcels.wrap(podcast));
+        intent.putExtra(Constant.podcast_extra,Parcels.wrap(podcast));
         startActivity(intent);
     }
 

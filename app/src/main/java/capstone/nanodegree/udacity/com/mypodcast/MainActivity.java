@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Intent intent = getIntent();
         if (intent != null) {
-            fromEpisode = intent.getStringExtra("no_account_from_download");
+            fromEpisode = intent.getStringExtra(Constant.no_account_from_download);
 
         }
 
@@ -81,10 +81,11 @@ public class MainActivity extends AppCompatActivity {
         getIdlingResource();
 
         PodcastSyncUtils.initialize(this);
-        if (fromEpisode != null && fromEpisode.equals("1")) {
+        if (fromEpisode != null && fromEpisode.equals(getString(R.string.one_value))) {
             if (savedInstanceState == null) {
                 LoginFragment loginFragment = new LoginFragment();
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_container, loginFragment).commit();
+
             }
         } else {
             if (savedInstanceState == null) {
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
     @NonNull
     public IdlingResource getIdlingResource() {
         if (mIdlingResource == null) {
-            mIdlingResource = new SimpleIdlingResource(getApplicationContext());
+            mIdlingResource = new SimpleIdlingResource();
         }
         return mIdlingResource;
     }

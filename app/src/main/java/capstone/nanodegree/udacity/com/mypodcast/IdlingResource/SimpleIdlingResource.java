@@ -36,11 +36,9 @@ public class SimpleIdlingResource implements IdlingResource {
 
     @Nullable
     private volatile ResourceCallback mCallback;
-    private final Context context;
 
-    public SimpleIdlingResource(Context context) {
-        this.context = context;
-    }
+   /* public SimpleIdlingResource() {
+    }*/
 
     // Idleness is controlled with this boolean.
     private AtomicBoolean mIsIdleNow = new AtomicBoolean(true);
@@ -66,12 +64,12 @@ public class SimpleIdlingResource implements IdlingResource {
      */
     public void setIdleState(boolean isIdleNow) {
         mIsIdleNow.set(isIdleNow);
-        if (isIdleNow && mCallback != null && !isIntentServiceRunning()) {
+        if (isIdleNow && mCallback != null) {
             mCallback.onTransitionToIdle();
         }
     }
 
-    private boolean isIntentServiceRunning() {
+    /*private boolean isIntentServiceRunning() {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo info : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (PodcastSyncIntentService.class.getName().equals(info.service.getClassName())) {
@@ -79,5 +77,5 @@ public class SimpleIdlingResource implements IdlingResource {
             }
         }
         return false;
-    }
+    }*/
 }

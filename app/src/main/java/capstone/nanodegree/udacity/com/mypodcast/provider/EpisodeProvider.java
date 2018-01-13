@@ -52,7 +52,10 @@ public class EpisodeProvider extends ContentProvider {
                 cursor = db.query(MyPodcastContract.MyPodcastEntry.EPISODE_TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             default:
-                cursor = null;
+                //cursor = null;
+            //case CODE_EPISODE_LIST:
+                cursor = db.query(MyPodcastContract.MyPodcastEntry.EPISODE_TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
         }
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
@@ -94,9 +97,6 @@ public class EpisodeProvider extends ContentProvider {
                 int rowsInserted = 0;
                 try {
                     for (ContentValues value : values) {
-                        /*Object link = value.get(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_LINK);
-                        if (link == null || link.toString().isEmpty())
-                            value.put(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_LINK, UUID.randomUUID().toString());*/
                         long _id = db.insert(MyPodcastContract.MyPodcastEntry.EPISODE_TABLE_NAME, null, value);
                         Log.d("insertvalues:", value + "||" + _id);
 

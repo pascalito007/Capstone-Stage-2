@@ -46,7 +46,7 @@ public class AppWidgetPlayerIntentService extends IntentService {
             String action = intent.getAction();
             if (Constant.ACTION_UPDATE_MEDIA_TITLE.equals(action)) {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-                final String title = sp.getString("media_title", "");
+                final String title = sp.getString(Constant.media_title, "");
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
                 int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, PlayerWidgetProvider.class));
                 //Now update all widgets

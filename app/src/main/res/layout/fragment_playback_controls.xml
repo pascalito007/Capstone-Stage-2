@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/album_art"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="@dimen/sixty_four_dp"
+        android:layout_height="@dimen/sixty_four_dp"
         android:contentDescription="@string/currently_playing_song"
         android:scaleType="centerCrop"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -19,7 +19,7 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/zero_dp"
         android:layout_height="wrap_content"
         android:contentDescription="@string/currently_playing_song"
         android:ellipsize="end"
@@ -32,8 +32,8 @@
         app:layout_constraintRight_toLeftOf="@+id/play_pause"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        android:text="The Best Music EVAH1111 THE BEST"
-        tools:text="The Best Music EVAH1111 THE BEST" />
+        android:text="@string/podcast_title"
+        tools:text="@string/podcast_title" />
 
     <TextView
         android:id="@+id/tvSubTitle"
@@ -46,16 +46,16 @@
         app:layout_constraintLeft_toLeftOf="@+id/title"
         app:layout_constraintRight_toLeftOf="@+id/play_pause"
         app:layout_constraintTop_toBottomOf="@+id/title"
-        android:text="John Doe and Band"
-        tools:text="John Doe and Band" />
+        android:text="@string/subtitle_label"
+        tools:text="@string/subtitle_label" />
 
     <ImageButton
         android:id="@+id/play_pause"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/fifty_dp"
+        android:layout_height="@dimen/fifty_dp"
         android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/play_pause"
-        android:padding="8dp"
+        android:padding="@dimen/height_dp"
         android:src="@drawable/ic_play"
         android:tint="@color/accent"
         android:tintMode="src_in"

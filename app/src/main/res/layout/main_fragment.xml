@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -12,7 +11,7 @@
         <RelativeLayout
             android:id="@+id/frame_view_pager"
             android:layout_width="match_parent"
-            android:layout_height="175dp"
+            android:layout_height="@dimen/one_handred_seventy_five"
 
             app:layout_constraintBottom_toTopOf="@+id/card_main_items"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -27,7 +26,17 @@
                     android:id="@+id/view_pager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
+
             </FrameLayout>
+
+            <ImageView
+                android:id="@+id/refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tint="@color/primary"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/ic_action_refresh" />
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/tab_layout"
@@ -36,17 +45,17 @@
                 android:layout_alignParentBottom="true"
                 app:tabBackground="@drawable/tab_selector"
                 app:tabGravity="center"
-                app:tabIndicatorHeight="0dp" />
+                app:tabIndicatorHeight="@dimen/zero_dp" />
         </RelativeLayout>
 
 
         <android.support.v7.widget.CardView
             android:id="@+id/card_main_items"
             android:layout_width="match_parent"
-            android:layout_height="75dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginTop="10dp"
-            app:cardElevation="4dp"
+            android:layout_height="@dimen/seventy_five_dp"
+            android:layout_marginBottom="@dimen/ten_dp"
+            android:layout_marginTop="@dimen/ten_dp"
+            app:cardElevation="@dimen/four_dp"
             app:layout_constraintBottom_toTopOf="@+id/card_recommendations"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -58,9 +67,10 @@
 
                 <ImageView
                     android:id="@+id/img_itune"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="40dp"
+                    android:layout_width="@dimen/fifty_dp"
+                    android:layout_height="@dimen/fifty_dp"
+                    android:layout_marginLeft="@dimen/fourty_dp"
+                    android:contentDescription="@string/itune_image"
                     android:src="@drawable/ic_itune2"
                     android:tint="@color/md_black_1000" />
 
@@ -69,17 +79,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/img_itune"
-                    android:layout_marginLeft="50dp"
-                    android:text="Itune" />
+                    android:layout_marginLeft="@dimen/fifty_dp"
+                    android:text="@string/itune_label" />
 
                 <ImageView
                     android:id="@+id/img_gpodder_category"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="@dimen/fifty_dp"
+                    android:layout_height="@dimen/fifty_dp"
                     android:layout_alignBaseline="@+id/img_itune"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="40dp"
+                    android:layout_marginRight="@dimen/fourty_dp"
+                    android:contentDescription="@string/itune_image"
                     android:src="@drawable/ic_gpodder_category"
                     android:tint="@color/md_black_1000" />
 
@@ -89,8 +100,8 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_below="@+id/img_gpodder_category"
-                    android:layout_marginEnd="14dp"
-                    android:layout_marginRight="14dp"
+                    android:layout_marginEnd="@dimen/fourteen_dp"
+                    android:layout_marginRight="@dimen/fourteen_dp"
                     android:text="gPodder Category" />
 
 
@@ -101,8 +112,8 @@
             android:id="@+id/card_recommendations"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardElevation="4dp"
+            android:layout_marginTop="@dimen/ten_dp"
+            app:cardElevation="@dimen/four_dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_main_items">
@@ -115,9 +126,8 @@
                     android:id="@+id/tv_recommendations_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginTop="5dp"
-                    android:text="Recommendations"
+                    android:layout_marginBottom="@dimen/five_dp"
+                    android:layout_marginTop="@dimen/five_dp"
                     android:textColor="@color/md_black_1000"
                     android:textStyle="bold" />
 
@@ -129,7 +139,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
-                    android:layout_margin="5dp"
+                    android:layout_margin="@dimen/five_dp"
                     android:text="Plus"
                     android:textColor="@color/primary" />
 
@@ -147,8 +157,8 @@
             android:id="@+id/card_top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardElevation="4dp"
+            android:layout_marginTop="@dimen/ten_dp"
+            app:cardElevation="@dimen/four_dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_recommendations">
@@ -162,8 +172,7 @@
                     android:id="@+id/tv_top_podcast_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:text="Top Podcast"
+                    android:layout_marginBottom="@dimen/five_dp"
                     android:textColor="@color/md_black_1000"
                     android:textStyle="bold" />
 
@@ -174,8 +183,8 @@
                     android:layout_alignBaseline="@+id/tv_top_podcast_label"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:text="Plus"
-                    android:layout_margin="5dp"
+                    android:layout_margin="@dimen/five_dp"
+                    android:text="@string/plus"
                     android:textColor="@color/primary" />
 
                 <android.support.v7.widget.RecyclerView
@@ -190,8 +199,8 @@
             android:id="@+id/card_category1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardElevation="4dp"
+            android:layout_marginTop="@dimen/ten_dp"
+            app:cardElevation="@dimen/four_dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_top">
@@ -205,20 +214,9 @@
                     android:id="@+id/tv_category_name1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginBottom="@dimen/five_dp"
                     android:textColor="@color/md_black_1000"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_category_plus_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/tv_category_name1"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:text="Plus"
-                    android:layout_margin="5dp"
-                    android:textColor="@color/primary" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_category1"
@@ -234,8 +232,8 @@
             android:id="@+id/card_category2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:cardElevation="4dp"
+            android:layout_marginTop="@dimen/ten_dp"
+            app:cardElevation="@dimen/four_dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_category1">
@@ -249,20 +247,9 @@
                     android:id="@+id/tv_category_name2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginBottom="@dimen/five_dp"
                     android:textColor="@color/md_black_1000"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tv_category_plus_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/tv_category_name2"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_margin="5dp"
-                    android:text="Plus"
-                    android:textColor="@color/primary" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_category2"

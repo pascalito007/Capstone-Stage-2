@@ -26,13 +26,13 @@ public class FeedUrlBackGroundTask extends AsyncTask<Void, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-        if (result != null) {
+       // if (result != null) {
             try {
                 listener.showResult(result);
             } catch (JSONException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
-        }
+       // }
     }
 
 }

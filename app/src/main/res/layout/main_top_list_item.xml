@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+    android:layout_margin="@dimen/five_dp">
 
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/one_dp"
         android:background="@color/md_blue_grey_100"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -17,19 +16,19 @@
 
     <ImageView
         android:id="@+id/img_podcast"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_marginTop="5dp"
+        android:layout_width="@dimen/seventy_five_dp"
+        android:layout_height="@dimen/seventy_five_dp"
+        android:layout_marginTop="@dimen/five_dp"
         android:src="@drawable/podcast_img"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider" />
 
     <TextView
         android:id="@+id/tv_podcast_title"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/zero_dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:text="Sur les épaules - France Inter et autre valeur"
+        android:layout_marginLeft="@dimen/five_dp"
+        android:text="@string/title"
         android:textColor="@color/md_black_1000"
         app:layout_constraintLeft_toRightOf="@+id/img_podcast"
         app:layout_constraintRight_toLeftOf="@+id/img_subscribe_podcast"
@@ -38,10 +37,11 @@
 
     <ImageView
         android:id="@+id/img_alert"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="@dimen/twenty_five_dp"
+        android:layout_height="@dimen/twenty_five_dp"
         android:src="@drawable/ic_alert"
         android:tint="@color/md_black_1000"
+        android:contentDescription="@string/alerte_image"
         app:layout_constraintBottom_toBottomOf="@+id/img_podcast"
         app:layout_constraintLeft_toLeftOf="@+id/tv_podcast_title"
         app:layout_constraintTop_toBottomOf="@+id/tv_podcast_title" />
@@ -50,16 +50,16 @@
         android:id="@+id/tv_subscribers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="5,3K"
+        android:text="@string/subscribers_number"
         app:layout_constraintBottom_toBottomOf="@+id/img_podcast"
         app:layout_constraintLeft_toRightOf="@+id/img_alert"
         app:layout_constraintTop_toBottomOf="@+id/tv_podcast_title" />
 
     <ImageView
         android:id="@+id/img_microphone"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_marginLeft="10dp"
+        android:layout_width="@dimen/twenty_five_dp"
+        android:layout_height="@dimen/twenty_five_dp"
+        android:layout_marginLeft="@dimen/ten_dp"
         android:src="@drawable/ic_microphone"
         android:tint="@color/md_black_1000"
         app:layout_constraintBottom_toBottomOf="@+id/img_podcast"
@@ -70,17 +70,18 @@
         android:id="@+id/tv_podcast_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Franc Inter"
+        android:text="@string/franc_inter_label"
         app:layout_constraintBottom_toBottomOf="@+id/img_podcast"
         app:layout_constraintLeft_toRightOf="@+id/img_microphone"
         app:layout_constraintTop_toBottomOf="@+id/tv_podcast_title" />
 
     <ImageView
         android:id="@+id/img_subscribe_podcast"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_margin="10dp"
+        android:layout_width="@dimen/twenty_five_dp"
+        android:layout_height="@dimen/twenty_five_dp"
+        android:layout_margin="@dimen/ten_dp"
         android:tint="@color/primary"
+        android:contentDescription="@string/subscribers_image"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -66,7 +66,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ItuneEpi
                 holder.img_play.setVisibility(View.INVISIBLE);
                 holder.img_download.setVisibility(View.VISIBLE);
             }
-        } else if (playList.equals("play")) {
+        } else if (playList.equals(context.getString(R.string.play_value))) {
             holder.img_play.setVisibility(View.GONE);
             holder.img_download.setVisibility(View.GONE);
         }
@@ -88,6 +88,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ItuneEpi
         View divider;
         ImageView img_download;
         ImageView img_play;
+        //ImageView overflow;
 
         public ItuneEpisodeViewHolder(View itemView) {
             super(itemView);
@@ -96,14 +97,18 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ItuneEpi
             divider = itemView.findViewById(R.id.divider);
             img_download = itemView.findViewById(R.id.img_download);
             img_play = itemView.findViewById(R.id.img_play);
+            //overflow = itemView.findViewById(R.id.overflow);
             itemView.setOnClickListener(this);
             img_download.setOnClickListener(this);
+            //overflow.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             if (view == img_download) {
                 mOnClickListener.onDownloadItemClick(list.get(getAdapterPosition()));
+            /*} else if (view == overflow) {
+                mOnClickListener.onOverFlowItemClick(list.get(getAdapterPosition()),view);*/
             } else {
                 mOnClickListener.onItemClick(list.get(getAdapterPosition()), view);
             }
@@ -111,9 +116,9 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ItuneEpi
     }
 
     public interface EpisodeClickListener {
-        void onItemClick(Episode podcast, View view);
-
-        void onDownloadItemClick(Episode podcast);
+        void onItemClick(Episode episode, View view);
+        void onDownloadItemClick(Episode episode);
+        //void onOverFlowItemClick(Episode episode,View view);
     }
 
 

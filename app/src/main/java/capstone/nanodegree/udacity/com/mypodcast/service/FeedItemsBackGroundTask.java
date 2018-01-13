@@ -37,10 +37,9 @@ public class FeedItemsBackGroundTask extends AsyncTask<Void, Void, String> {
     protected void onPostExecute(String result) {
 
         try {
-            if (result != null)
-                listener.showResultItems(result);
+            listener.showResultItems(result);
         } catch (JSONException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 

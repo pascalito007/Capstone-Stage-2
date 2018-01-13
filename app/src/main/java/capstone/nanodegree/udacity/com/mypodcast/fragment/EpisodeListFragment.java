@@ -26,6 +26,7 @@ import capstone.nanodegree.udacity.com.mypodcast.adapter.EpisodeAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.model.Episode;
 import capstone.nanodegree.udacity.com.mypodcast.model.Podcast;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 import capstone.nanodegree.udacity.com.mypodcast.utils.NetworkUtils;
 import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 
@@ -52,7 +53,7 @@ public class EpisodeListFragment extends Fragment implements EpisodeAdapter.Epis
         View view = inflater.inflate(R.layout.episode_list_fragment, container, false);
         unbinder =ButterKnife.bind(this,view);
         Bundle bundle=getArguments();
-        podcastId=bundle.getString("podcast_id_extra");
+        podcastId=bundle.getString(Constant.podcast_id_extra);
         Cursor cursor = getActivity().getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcastId).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcastId}, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
@@ -61,13 +62,13 @@ public class EpisodeListFragment extends Fragment implements EpisodeAdapter.Epis
             cursor.close();
         }
         Log.d("podcastvaluesfragment", podcast + "|arg:" + podcastId);
-        if (!podcast.equals("itunes")) {
+        if (!podcast.equals(Constant.itunes)) {
             new BackTask().execute();
         } else {
             new BackTaskItune().execute();
         }
         pb_loading_indicator.setVisibility(View.VISIBLE);
-        episodeAdapter = new EpisodeAdapter(this, getContext(), "play");
+        episodeAdapter = new EpisodeAdapter(this, getContext(), getString(R.string.play_value));
         rv_episode_list.setAdapter(episodeAdapter);
         rv_episode_list.setNestedScrollingEnabled(false);
         return view;
@@ -93,6 +94,11 @@ public class EpisodeListFragment extends Fragment implements EpisodeAdapter.Epis
     public void onDownloadItemClick(Episode podcast) {
 
     }
+
+   /* @Override
+    public void onOverFlowItemClick(Episode episode, View view) {
+
+    }*/
 
 
     public class BackTask extends AsyncTask<Void, Void, String> {
@@ -137,7 +143,7 @@ public class EpisodeListFragment extends Fragment implements EpisodeAdapter.Epis
                 try {
 
                     JSONObject resultObject = new JSONObject(result);
-                    feedUrl = resultObject.getJSONArray("results").getJSONObject(0).getString("feedUrl");
+                    feedUrl = resultObject.getJSONArray(Constant.results).getJSONObject(0).getString(Constant.FEED_URL);
                     if (!feedUrl.isEmpty())
                         new BackTask().execute();
                 } catch (Exception ex) {

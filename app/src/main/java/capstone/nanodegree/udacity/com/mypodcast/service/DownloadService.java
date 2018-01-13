@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.api.DownloaApi;
 import capstone.nanodegree.udacity.com.mypodcast.model.Download;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -35,7 +36,7 @@ public class DownloadService extends IntentService {
     private NotificationManager notificationManager;
     private int totalFileSize;
     private String fileName;
-    String episode_id;
+    //String episode_id;
 
 
     @Override
@@ -45,14 +46,14 @@ public class DownloadService extends IntentService {
 
         notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_drawer_download)
-                .setContentTitle("Download")
-                .setContentText("Downloading File")
+                .setContentTitle(getString(R.string.download))
+                .setContentText(getString(R.string.downloading_file))
                 .setAutoCancel(true);
         notificationManager.notify(0, notificationBuilder.build());
-        String file = intent.getStringExtra("other");
+        String file = intent.getStringExtra(Constant.other);
         fileName = file.replaceAll("/", "_");
-        episode_id = intent.getStringExtra("episode_id");
-        initDownload(intent.getStringExtra("root_url"), intent.getStringExtra("other"));
+        //episode_id = intent.getStringExtra(Constant.episode_id);
+        initDownload(intent.getStringExtra(Constant.root_url), intent.getStringExtra(Constant.other));
 
     }
 
@@ -120,20 +121,20 @@ public class DownloadService extends IntentService {
 
     private void sendNotification(Download download) {
         Log.d("download:", download.toString());
-        download.setEpisodeId(episode_id);
+        //download.setEpisodeId(episode_id);
         sendIntent(download);
         notificationBuilder.setProgress(100, download.getProgress(), false);
-        notificationBuilder.setContentText(String.format("Downloaded (%d/%d) MB", download.getCurrentFileSize(), download.getTotalFileSize()));
+        notificationBuilder.setContentText(String.format(getString(R.string.downloaded1), download.getCurrentFileSize(), download.getTotalFileSize()));
         notificationManager.notify(0, notificationBuilder.build());
     }
 
 
     private void sendIntent(Download download) {
 
-        Intent intent = new Intent("messageProgress");
-        intent.putExtra("download", download);
-        intent.putExtra("file_name", fileName);
-        intent.putExtra("episode_id", episode_id);
+        Intent intent = new Intent(Constant.message_progress);
+        intent.putExtra(Constant.download, download);
+        intent.putExtra(Constant.file_name, fileName);
+        //intent.putExtra(Constant.episode_id, episode_id);
         LocalBroadcastManager.getInstance(DownloadService.this).sendBroadcast(intent);
     }
 
@@ -142,12 +143,12 @@ public class DownloadService extends IntentService {
         Download download = new Download();
         download.setProgress(100);
         download.setFileName(fileName);
-        download.setEpisodeId(episode_id);
+        //download.setEpisodeId(episode_id);
         sendIntent(download);
 
         notificationManager.cancel(0);
         notificationBuilder.setProgress(0, 0, false);
-        notificationBuilder.setContentText("File Downloaded");
+        notificationBuilder.setContentText(getString(R.string.file_downloaded));
         notificationManager.notify(0, notificationBuilder.build());
 
     }

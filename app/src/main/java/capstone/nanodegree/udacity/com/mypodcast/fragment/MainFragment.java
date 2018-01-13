@@ -21,7 +21,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.parceler.Parcels;
 
@@ -40,6 +42,11 @@ import capstone.nanodegree.udacity.com.mypodcast.adapter.MainFragmentAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.MainFragmentTopListAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.model.Podcast;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
+import capstone.nanodegree.udacity.com.mypodcast.service.PodcastSyncIntentService;
+import capstone.nanodegree.udacity.com.mypodcast.service.PodcastSyncUtils;
+import capstone.nanodegree.udacity.com.mypodcast.utils.AppConfig;
+import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 /**
  * Created by jem001 on 04/12/2017.
@@ -65,6 +72,16 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     TextView category2Name;
     SharedPreferences sp;
     private Unbinder unbinder;
+    @BindView(R.id.tv_top_podcast_label)
+    TextView topListLabel;
+    @BindView(R.id.tv_recommendations_label)
+    TextView recommendationLabel;
+    @BindView(R.id.tv_recommendations_plus)
+    TextView recommendationPlus;
+    @BindView(R.id.tv_top_podcast_plus)
+    TextView topListPlus;
+    @BindView(R.id.refresh)
+    ImageView refresh;
 
 
     MainFragmentAdapter recommendationAdapter;
@@ -76,9 +93,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private static final int TOP_LIST_LOADER_ID = 33;
     private static final int FIRST_CATEGORY_LOADER_ID = 44;
     private static final int SECOND_CATEGORY_LOADER_ID = 66;
-    public static final String itunes = "itunes";
     public static SimpleIdlingResource mIdlingResource;
-
+    SharedPreferences sharedPreferences;
 
     @Nullable
     @Override
@@ -86,12 +102,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         View view = inflater.inflate(R.layout.main_fragment, container, false);
         unbinder = ButterKnife.bind(this, view);
         sp = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String email = sp.getString("email", null);
+        String email = sp.getString(Constant.email, null);
         Log.d("email:", email + "");
         MainFragmentPagerAdapter pagerAdapter = new MainFragmentPagerAdapter(getFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager, true);
-
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         recommendationAdapter = new MainFragmentAdapter(this);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), getActivity().getResources().getInteger(R.integer.grid_column_count));
         rvRecommendations.setHasFixedSize(true);
@@ -143,6 +159,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         startActivity(intent);
     }
 
+    @OnClick(R.id.refresh)
+    public void onRefreshClicked() {
+        Toast.makeText(getContext(),"Data is refreshing in background",Toast.LENGTH_LONG).show();
+        PodcastSyncUtils.startImmediateSync(getContext());
+    }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -165,27 +187,35 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data != null) {
+        Log.d("dataavailable:", data + "");
+        if (data != null && data.getCount() != 0) {
             switch (loader.getId()) {
                 case RECOMMENDATIONS_LOADER_ID:
                     recommendationAdapter.swapAdapter(data);
-                    if (mIdlingResource != null)
+                    recommendationPlus.setVisibility(View.VISIBLE);
+                    recommendationLabel.setText(sharedPreferences.getString(Constant.recommandation, null));
+                    if (mIdlingResource != null && !AppUtils.isMyServiceRunning(PodcastSyncIntentService.class, getContext()))
                         mIdlingResource.setIdleState(true);
                     break;
                 case TOP_LIST_LOADER_ID:
+                    topListPlus.setVisibility(View.VISIBLE);
                     topListAdapter.swapAdapter(data);
+                    topListLabel.setText(sharedPreferences.getString(Constant.toplist, null));
                     break;
                 case FIRST_CATEGORY_LOADER_ID:
-                    category1Name.setText(sp.getString("category1", ""));
+                    category1Name.setText(sp.getString(Constant.category1, ""));
                     category1Adapter.swapAdapter(data);
                     break;
                 case SECOND_CATEGORY_LOADER_ID:
-                    category2Name.setText(sp.getString("category2", ""));
+                    category2Name.setText(sp.getString(Constant.category2, ""));
                     category2Adapter.swapAdapter(data);
                     break;
                 default:
                     break;
             }
+        } else {
+            recommendationPlus.setVisibility(View.INVISIBLE);
+            topListPlus.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -206,31 +236,31 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             podcast = Podcast.getPodcastFromCursor(cursor);
         }
         Intent intent = new Intent(getContext(), EpisodeActivity.class);
-        intent.putExtra("podcast_extra", Parcels.wrap(podcast));
+        intent.putExtra(Constant.podcast_extra, Parcels.wrap(podcast));
         startActivity(intent);
     }
 
     @Override
     public void onGpodderItemClickListener(Podcast podcast) {
         Log.d("podcastcontent:", podcast + "");
-        Intent intent = new Intent(getContext(), EpisodeActivity.class);
-        intent.putExtra("podcast_extra", Parcels.wrap(podcast));
-        startActivity(intent);
+        startEpisode(podcast);
     }
 
     @Override
     public void onCategory2ItemClick(Podcast podcast) {
         Log.d("podcastcontent:", podcast + "");
-        Intent intent = new Intent(getContext(), EpisodeActivity.class);
-        intent.putExtra("podcast_extra", Parcels.wrap(podcast));
-        startActivity(intent);
+        startEpisode(podcast);
     }
 
     @Override
     public void onCategory1ItemClick(Podcast podcast) {
         Log.d("podcastcontent:", podcast + "");
+        startEpisode(podcast);
+    }
+
+    public void startEpisode(Podcast podcast) {
         Intent intent = new Intent(getContext(), EpisodeActivity.class);
-        intent.putExtra("podcast_extra", Parcels.wrap(podcast));
+        intent.putExtra(Constant.podcast_extra, Parcels.wrap(podcast));
         startActivity(intent);
     }
 

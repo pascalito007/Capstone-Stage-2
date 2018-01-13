@@ -2,6 +2,6 @@
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:id="@+id/img_subscribe_podcast"
-    android:layout_margin="5dp"
+    android:layout_margin="@dimen/five_dp"
     android:layout_height="wrap_content">
 </ImageView>

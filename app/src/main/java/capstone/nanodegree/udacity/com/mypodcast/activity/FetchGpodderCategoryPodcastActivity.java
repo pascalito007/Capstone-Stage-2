@@ -11,6 +11,7 @@ import butterknife.ButterKnife;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.GpodderPopularFragment;
 import capstone.nanodegree.udacity.com.mypodcast.model.Category;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 public class FetchGpodderCategoryPodcastActivity extends AppCompatActivity {
     Category category;
@@ -25,11 +26,11 @@ public class FetchGpodderCategoryPodcastActivity extends AppCompatActivity {
             finish();
         Intent intent=getIntent();
         if (intent!=null)
-            category= Parcels.unwrap(intent.getParcelableExtra("category_extra"));
+            category= Parcels.unwrap(intent.getParcelableExtra(Constant.category_extra));
 
         GpodderPopularFragment fragment = new GpodderPopularFragment();
         Bundle bundle=new Bundle();
-        bundle.putString("tag",category.getTag());
+        bundle.putString(Constant.tag,category.getTag());
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().add(R.id.fragment, fragment).commit();
 

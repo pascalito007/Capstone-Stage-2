@@ -26,6 +26,7 @@ import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeDetailsActivity
 import capstone.nanodegree.udacity.com.mypodcast.adapter.DownloadAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
+import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 /**
  * Created by jem001 on 04/12/2017.
@@ -82,7 +83,7 @@ public class DownloadFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onItemClick(long episodeId) {
         Intent intent = new Intent(getContext(), EpisodeDetailsActivity.class);
-        intent.putExtra("episode_id",episodeId);
+        intent.putExtra(Constant.episode_id,episodeId);
         startActivity(intent);
     }
 
@@ -104,12 +105,12 @@ public class DownloadFragment extends Fragment implements LoaderManager.LoaderCa
                 Cursor cursor1 = getContext().getContentResolver().query(MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_DOWNLOAD_FLAG+" = ?", new String[]{"Yes"}, null);
                 if (cursor1 != null && cursor1.getCount() > 0) {
                     adapter.swapAdapter(cursor1);
-                    Snackbar.make(view, "File deleted from hard disc", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    Snackbar.make(view, R.string.file_deleted, Snackbar.LENGTH_LONG)
+                            .setAction(Constant.action, null).show();
                 }
             } else {
-                Snackbar.make(view, "File not exist", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar.make(view, R.string.file_not_exist, Snackbar.LENGTH_LONG)
+                        .setAction(Constant.action, null).show();
             }
             cursor.close();
         }

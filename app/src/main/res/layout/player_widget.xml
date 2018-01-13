@@ -1,12 +1,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#09C"
+    android:background="@color/md_blue_300"
     android:padding="@dimen/widget_margin">
 
     <ImageView
         android:id="@+id/btnPlay"
-        android:layout_width="56dp"
+        android:layout_width="@dimen/fifty_sixe_dp"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
@@ -22,12 +22,12 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/btnPlay"
-        android:background="#09C"
+        android:background="@color/md_blue_300"
         android:maxLines="1"
         android:contentDescription="@string/appwidget_text"
         android:text="@string/appwidget_text"
-        android:textColor="#ffffff"
-        android:textSize="24sp"
+        android:textColor="@color/md_white_1000"
+        android:textSize="@dimen/twenty_four_sp"
         android:textStyle="bold" />
 
 </RelativeLayout>
