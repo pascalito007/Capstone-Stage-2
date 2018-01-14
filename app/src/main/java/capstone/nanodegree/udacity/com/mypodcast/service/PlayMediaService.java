@@ -1,5 +1,6 @@
 package capstone.nanodegree.udacity.com.mypodcast.service;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -8,13 +9,15 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.NotificationCompat;
+//import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -204,6 +207,7 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
         Log.d("Exoplayerchanges:", "Exoplayerchanges");
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if ((playbackState == ExoPlayer.STATE_READY) && playWhenReady) {
@@ -298,8 +302,9 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
      *
      * @param state The PlaybackState of the MediaSession.
      */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void showNotification(PlaybackStateCompat state) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        Notification.Builder builder = new Notification.Builder(this);
 
         int icon;
         String play_pause;
@@ -314,15 +319,14 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
         }
 
 
-        NotificationCompat.Action playPauseAction = new NotificationCompat.Action(
+        Notification.Action playPauseAction = new Notification.Action.Builder(
                 icon, play_pause,
                 MediaButtonReceiver.buildMediaButtonPendingIntent(this,
-                        PlaybackStateCompat.ACTION_PLAY_PAUSE));
+                        PlaybackStateCompat.ACTION_PLAY_PAUSE)).build();
 
-        NotificationCompat.Action restartAction = new android.support.v4.app.NotificationCompat
-                .Action(R.drawable.exo_controls_previous, getString(R.string.restart),
+        Notification.Action restartAction = new Notification.Action.Builder(R.drawable.exo_controls_previous, getString(R.string.restart),
                 MediaButtonReceiver.buildMediaButtonPendingIntent
-                        (this, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS));
+                        (this, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)).build();
 
         PendingIntent contentPendingIntent = PendingIntent.getActivity
                 (this, 0, new Intent(this, PlayMediaActivity.class), 0);
@@ -331,12 +335,13 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
                 .setContentText(sharedPreferences.getString(Constant.bottom_sub_title, null))
                 .setContentIntent(contentPendingIntent)
                 .setSmallIcon(R.mipmap.ic_podcast_launcher)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .addAction(restartAction)
                 .addAction(playPauseAction)
-                .setStyle(new NotificationCompat.MediaStyle()
-                        .setMediaSession(mMediaSession.getSessionToken())
-                        .setShowActionsInCompactView(0, 1));
+                //.setStyle(new Notification.MediaStyle()
+                        //.setMediaSession(mMediaSession.getSessionToken())
+                        //.setShowActionsInCompactView(0, 1))
+        ;
 
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

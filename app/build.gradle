@@ -1,11 +1,19 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    signingConfigs {
+        config {
+            keyAlias 'udacity'
+            keyPassword 'password'
+            storeFile file("$rootDir/keystore.jks")
+            storePassword 'password'
+        }
+    }
+    compileSdkVersion 27
     defaultConfig {
         applicationId "capstone.nanodegree.udacity.com.mypodcast"
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -21,16 +29,15 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
-
     flavorDimensions "default"
     //flavorDimensions "free", "paid"
-
     productFlavors {
         free {
             applicationId "capstone.nanodegree.udacity.com.mypodcast.free"
@@ -46,7 +53,7 @@ android {
     }
 }
 def GLIDEVersion = '4.3.1'
-def supportVersion = '26.1.0'
+def supportVersion = '27.0.2'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -69,8 +76,7 @@ dependencies {
     annotationProcessor "com.github.bumptech.glide:compiler:$GLIDEVersion"
     implementation 'com.squareup.okhttp3:okhttp:3.9.1'
     implementation 'com.facebook.stetho:stetho:1.5.0'
-
-    implementation("com.mikepenz:materialdrawer:6.0.2@aar") {
+    implementation('com.mikepenz:materialdrawer:6.0.2@aar') {
         transitive = true
     }
     implementation "com.android.support:cardview-v7:$supportVersion"
@@ -85,7 +91,6 @@ dependencies {
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
     implementation 'com.google.android.exoplayer:exoplayer:2.6.0'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
-
     implementation 'com.google.android.gms:play-services-safetynet:11.8.0'
     implementation 'com.firebaseui:firebase-ui-database:3.1.3'
     implementation 'com.google.android.gms:play-services-auth:11.8.0'
