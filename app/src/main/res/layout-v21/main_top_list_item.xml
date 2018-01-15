@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="@dimen/five_dp">
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/one_dp"
+        android:background="@color/md_blue_grey_100"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/img_podcast"
+        android:layout_width="@dimen/seventy_five_dp"
+        android:layout_height="@dimen/seventy_five_dp"
+        android:layout_marginTop="@dimen/five_dp"
+        android:transitionName="@string/podcast_image_transition"
+        tools:src="@drawable/podcast_img"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
+
+    <TextView
+        android:id="@+id/tv_podcast_title"
+        android:layout_width="@dimen/zero_dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/five_dp"
+        android:layout_marginStart="@dimen/five_dp"
+        android:text="@string/title"
+        android:textColor="@color/md_black_1000"
+        app:layout_constraintLeft_toRightOf="@+id/img_podcast"
+        app:layout_constraintRight_toLeftOf="@+id/img_subscribe_podcast"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toTopOf="@+id/img_podcast" />
+
+    <ImageView
+        android:id="@+id/img_alert"
+        android:layout_width="@dimen/twenty_five_dp"
+        android:layout_height="@dimen/twenty_five_dp"
+        android:src="@drawable/ic_alert"
+        android:tint="@color/md_black_1000"
+        android:contentDescription="@string/alerte_image"
+        app:layout_constraintBottom_toBottomOf="@+id/img_podcast"
+        app:layout_constraintLeft_toLeftOf="@+id/tv_podcast_title"
+        app:layout_constraintStart_toStartOf="@+id/tv_podcast_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_podcast_title" />
+
+    <TextView
+        android:id="@+id/tv_subscribers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/subscribers_number"
+        app:layout_constraintBottom_toBottomOf="@+id/img_podcast"
+        app:layout_constraintLeft_toRightOf="@+id/img_alert"
+        app:layout_constraintTop_toBottomOf="@+id/tv_podcast_title" />
+
+    <ImageView
+        android:id="@+id/img_microphone"
+        android:layout_width="@dimen/twenty_five_dp"
+        android:layout_height="@dimen/twenty_five_dp"
+        android:layout_marginLeft="@dimen/ten_dp"
+        android:src="@drawable/ic_microphone"
+        android:tint="@color/md_black_1000"
+        app:layout_constraintBottom_toBottomOf="@+id/img_podcast"
+        app:layout_constraintLeft_toRightOf="@+id/tv_subscribers"
+        app:layout_constraintTop_toBottomOf="@+id/tv_podcast_title" />
+
+    <TextView
+        android:id="@+id/tv_podcast_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/franc_inter_label"
+        app:layout_constraintBottom_toBottomOf="@+id/img_podcast"
+        app:layout_constraintLeft_toRightOf="@+id/img_microphone"
+        app:layout_constraintTop_toBottomOf="@+id/tv_podcast_title" />
+
+    <!--<ImageView
+        android:id="@+id/img_subscribe_podcast"
+        android:layout_width="@dimen/twenty_five_dp"
+        android:layout_height="@dimen/twenty_five_dp"
+        android:layout_margin="@dimen/ten_dp"
+        android:tint="@color/primary"
+        android:contentDescription="@string/subscribers_image"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_subscribe_notification_active" />-->
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pb_loading_indicator"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>

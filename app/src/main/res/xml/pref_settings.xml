@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="connexion_key"
+        android:summaryOff="Sync Only On Wifi"
+        android:summaryOn="Sync on every network"
+        android:title="Sync strategy" />
+    <EditTextPreference
+        android:defaultValue="24"
+        android:key="limit_podcast"
+        android:summary="Sync data Every 24 hours"
+        android:title="Syn time in hour" />
+    <EditTextPreference
+        android:defaultValue="50"
+        android:key="top_podcast_key"
+        android:summary="Load top 50 podcast"
+        android:title="Limit fetch podcast" />
+</PreferenceScreen>

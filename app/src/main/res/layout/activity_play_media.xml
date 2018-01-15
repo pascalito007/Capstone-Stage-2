@@ -43,6 +43,8 @@
             app:layout_constraintBottom_toTopOf="@+id/card_items"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar
@@ -53,6 +55,8 @@
             app:layout_constraintBottom_toTopOf="@+id/card_items"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.CardView
@@ -63,6 +67,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/playerView">
 
             <LinearLayout
@@ -107,6 +113,7 @@
                         android:layout_alignParentTop="true"
                         android:layout_marginEnd="@dimen/twenty_dp"
                         android:layout_marginRight="@dimen/twenty_dp"
+                        android:layout_marginStart="@dimen/twenty_dp"
                         android:contentDescription="@string/share_button_img"
                         android:src="@drawable/ic_share"
                         android:tint="@color/primary" />

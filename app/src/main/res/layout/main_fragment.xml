@@ -14,8 +14,10 @@
             android:layout_height="@dimen/one_handred_seventy_five"
 
             app:layout_constraintBottom_toTopOf="@+id/card_main_items"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <FrameLayout
@@ -29,14 +31,33 @@
 
             </FrameLayout>
 
-            <ImageView
-                android:id="@+id/refresh"
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tint="@color/primary"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/ic_action_refresh" />
+                android:layout_alignParentRight="true">
+
+                <ImageView
+                    android:id="@+id/settings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/ic_action_settings"
+                    android:tint="@color/primary" />
+
+                <ImageView
+                    android:id="@+id/refresh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/settings"
+                    android:layout_toStartOf="@+id/settings"
+                    android:src="@drawable/ic_action_refresh"
+                    android:tint="@color/primary" />
+
+
+            </RelativeLayout>
+
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/tab_layout"
@@ -53,12 +74,13 @@
             android:id="@+id/card_main_items"
             android:layout_width="match_parent"
             android:layout_height="@dimen/seventy_five_dp"
-            android:layout_marginBottom="@dimen/ten_dp"
-            android:layout_marginTop="@dimen/ten_dp"
+            android:layout_margin="@dimen/ten_dp"
             app:cardElevation="@dimen/four_dp"
             app:layout_constraintBottom_toTopOf="@+id/card_recommendations"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/frame_view_pager">
 
             <RelativeLayout
@@ -70,7 +92,9 @@
                     android:layout_width="@dimen/fifty_dp"
                     android:layout_height="@dimen/fifty_dp"
                     android:layout_marginLeft="@dimen/fourty_dp"
+                    android:layout_marginStart="@dimen/fourty_dp"
                     android:contentDescription="@string/itune_image"
+                    android:nextFocusRight="@+id/img_gpodder_category"
                     android:src="@drawable/ic_itune2"
                     android:tint="@color/md_black_1000" />
 
@@ -80,6 +104,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/img_itune"
                     android:layout_marginLeft="@dimen/fifty_dp"
+                    android:layout_marginStart="@dimen/fifty_dp"
+                    android:nextFocusRight="@+id/cate"
                     android:text="@string/itune_label" />
 
                 <ImageView
@@ -89,12 +115,15 @@
                     android:layout_alignBaseline="@+id/img_itune"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
+                    android:layout_marginEnd="@dimen/fourty_dp"
                     android:layout_marginRight="@dimen/fourty_dp"
                     android:contentDescription="@string/itune_image"
+                    android:nextFocusLeft="@+id/img_itune"
                     android:src="@drawable/ic_gpodder_category"
                     android:tint="@color/md_black_1000" />
 
                 <TextView
+                    android:id="@+id/cate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -102,6 +131,7 @@
                     android:layout_below="@+id/img_gpodder_category"
                     android:layout_marginEnd="@dimen/fourteen_dp"
                     android:layout_marginRight="@dimen/fourteen_dp"
+                    android:nextFocusLeft="@+id/tv_itune_label"
                     android:text="gPodder Category" />
 
 
@@ -114,8 +144,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/ten_dp"
             app:cardElevation="@dimen/four_dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_main_items">
 
             <RelativeLayout
@@ -159,8 +191,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/ten_dp"
             app:cardElevation="@dimen/four_dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_recommendations">
 
             <RelativeLayout
@@ -201,8 +235,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/ten_dp"
             app:cardElevation="@dimen/four_dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_top">
 
             <RelativeLayout
@@ -234,8 +270,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/ten_dp"
             app:cardElevation="@dimen/four_dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_category1">
 
             <RelativeLayout

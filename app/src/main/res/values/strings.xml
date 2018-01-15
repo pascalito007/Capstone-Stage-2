@@ -343,4 +343,7 @@
     <string name="downloading_file">Downloading File</string>
     <string name="file_downloaded">File Downloaded</string>
     <string name="refresh">Refresh</string>
+    <string name="podcast_image_transition">pocast_image_transition</string>
+    <string name="account_image">Account image</string>
+    <string name="logout">Logout</string>
 </resources>

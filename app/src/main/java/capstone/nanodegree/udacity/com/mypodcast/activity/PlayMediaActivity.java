@@ -1,7 +1,6 @@
 package capstone.nanodegree.udacity.com.mypodcast.activity;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -26,11 +24,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,22 +42,18 @@ import capstone.nanodegree.udacity.com.mypodcast.service.PlayMediaService;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
 import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
-import static capstone.nanodegree.udacity.com.mypodcast.utils.Constant.ACTION_NEW_URL;
-
 public class PlayMediaActivity extends AppCompatActivity implements EpisodeListFragment.PlayListClickListener {
     @BindView(R.id.playerView)
     SimpleExoPlayerView mPlayerView;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    public static Episode episode;
-    public static String img;
+    public  Episode episode;
+    public  String img;
     @BindView(R.id.tv_description)
     TextView description;
     @BindView(R.id.pb_loading_indicator)
     ProgressBar pbLoadingIndicator;
 
-    @BindView(R.id.adView)
-    AdView mAdView;
     SharedPreferences sharedPreferences;
     PlayMediaService service;
 
@@ -119,23 +109,13 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
             EpisodeListFragment episodeListFragment = new EpisodeListFragment();
             Bundle bundle = new Bundle();
             bundle.putString(Constant.podcast_id_extra, episode.getPodcastId());
+            bundle.putString(Constant.img,img);
             episodeListFragment.setArguments(bundle);
-            getSupportFragmentManager().beginTransaction().add(R.id.container, episodeListFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.container, episodeListFragment).commit();
         }
 
         //Update App widget to play that music
         AppWidgetPlayerIntentService.startActionUpdateMediaTitle(this);
-
-        //Set up for pre-fetching interstitial ad request
-        MobileAds.initialize(this, getString(R.string.add_init_id));
-
-
-        AdRequest adRequest = new AdRequest.Builder()
-                //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .addTestDevice(getString(R.string.device_id))
-                .build();
-        mAdView.loadAd(adRequest);
-
     }
 
 

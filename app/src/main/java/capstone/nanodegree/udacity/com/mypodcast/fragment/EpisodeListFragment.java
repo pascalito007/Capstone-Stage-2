@@ -44,6 +44,7 @@ public class EpisodeListFragment extends Fragment implements EpisodeAdapter.Epis
     String feedUrl = "";
     List<Episode> episodeList;
     String podcastId;
+    String img;
     public PlayListClickListener listener;
     private Unbinder unbinder;
 
@@ -54,6 +55,7 @@ public class EpisodeListFragment extends Fragment implements EpisodeAdapter.Epis
         unbinder =ButterKnife.bind(this,view);
         Bundle bundle=getArguments();
         podcastId=bundle.getString(Constant.podcast_id_extra);
+        img=bundle.getString(Constant.img);
         Cursor cursor = getActivity().getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcastId).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcastId}, null);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
@@ -95,7 +97,7 @@ public class EpisodeListFragment extends Fragment implements EpisodeAdapter.Epis
 
     }
 
-   /* @Override
+    /*@Override
     public void onOverFlowItemClick(Episode episode, View view) {
 
     }*/
@@ -119,7 +121,7 @@ public class EpisodeListFragment extends Fragment implements EpisodeAdapter.Epis
                 try {
                     episodeList = NetworkUtils.getEpisodeListFromFeed(result, podcastId);
                     if (!episodeList.isEmpty()) {
-                        episodeAdapter.swapAdapter(episodeList);
+                        episodeAdapter.swapAdapter(episodeList,img);
                     }
                     pb_loading_indicator.setVisibility(View.GONE);
                 } catch (Exception ex) {

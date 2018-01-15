@@ -9,14 +9,11 @@ import android.util.Log;
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-import capstone.nanodegree.udacity.com.mypodcast.eventbus.RecommandationEvent;
 import capstone.nanodegree.udacity.com.mypodcast.model.Category;
 import capstone.nanodegree.udacity.com.mypodcast.model.Podcast;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;

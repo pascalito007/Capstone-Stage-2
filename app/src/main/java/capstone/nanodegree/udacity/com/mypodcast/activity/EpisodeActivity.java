@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -26,12 +25,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -54,7 +51,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import capstone.nanodegree.udacity.com.mypodcast.FeedListener;
 import capstone.nanodegree.udacity.com.mypodcast.IdlingResource.SimpleIdlingResource;
-import capstone.nanodegree.udacity.com.mypodcast.MainActivity;
+import capstone.nanodegree.udacity.com.mypodcast.*;
 import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.EpisodeAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.model.Download;
@@ -77,7 +74,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
     Toolbar toolbar;
     @BindView(R.id.rv_episode)
     RecyclerView rvEpisode;
-    @BindView(R.id.podcast_img)
+    @BindView(R.id.img_podcast)
     ImageView podcast_img;
     public Podcast podcast;
     @BindView(R.id.pb_loading_indicator)
@@ -147,10 +144,10 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         }
 
 
-        setTitle("");
-        if (findViewById(R.id.frame1) == null) {
-            CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
-            appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+        //setTitle("");
+       /* if (findViewById(R.id.frame1) == null) {
+            //CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
+            *//*appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
                 boolean isShow = false;
                 int scrollRange = -1;
 
@@ -161,18 +158,18 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
                     }
                     if (scrollRange + verticalOffset == 0) {
                         if (collapsingToolbarLayout != null)
-                        collapsingToolbarLayout.setTitle(getString(R.string.episode_podcast));
+                            collapsingToolbarLayout.setTitle(getString(R.string.episode_podcast));
                         isShow = true;
                     } else if (isShow) {
                         if (collapsingToolbarLayout != null)
-                        collapsingToolbarLayout.setTitle(" ");
+                            collapsingToolbarLayout.setTitle(" ");
                         isShow = false;
                     }
                 }
-            });
-        } else {
+            });*//*
+        } else {*/
             setTitle(podcast.getTitle() + getString(R.string.episodes));
-        }
+        //}
         layoutManager = new LinearLayoutManager(this);
         episodeAdapter = new EpisodeAdapter(this, this, "");
         rvEpisode.setAdapter(episodeAdapter);
@@ -257,7 +254,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
             Log.d("episodeListvalue:", episodeList + "");
             if (!episodeList.isEmpty()) {
                 refresh.setVisibility(View.GONE);
-                episodeAdapter.swapAdapter(episodeList);
+                episodeAdapter.swapAdapter(episodeList, podcast.getCoverImage());
                 if (mIdlingResource != null)
                     mIdlingResource.setIdleState(true);
             } else {
@@ -310,7 +307,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
                     Toast.makeText(this, R.string.subscribe_before, Toast.LENGTH_LONG).show();
                 } else {
                     if (!episode.getMp3FileUrl().isEmpty()) {
-                        String rootUrl = episode.getMp3FileUrl().substring(0, episode.getMp3FileUrl().indexOf("/", 7));
+                        String rootUrl = episode.getMp3FileUrl().substring(0, episode.getMp3FileUrl().indexOf("/", 8));
                         String other = episode.getMp3FileUrl().substring(rootUrl.length());
                         File file = AppUtils.getFileInInternalMemory(other.replaceAll("/", "_"));
                         if (file != null) {
@@ -318,6 +315,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
                                     R.string.already_downloaded,
                                     Toast.LENGTH_SHORT).show();
                         } else {
+                            Log.d("Downloaddata:", rootUrl + "|" + other + "|" + episode.getMp3FileUrl());
                             startDownload(rootUrl, other);
                         }
                     }
@@ -433,6 +431,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PLAY_ACTIVITY_REQUEST) {
             if (resultCode == RESULT_OK) {
+                pbLoadingIndicator.setVisibility(View.GONE);
                 Cursor cursor = getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(data.getStringExtra("podcast_id")).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{data.getStringExtra("podcast_id")}, null);
                 if (cursor != null && cursor.getCount() > 0) {
                     cursor.moveToFirst();

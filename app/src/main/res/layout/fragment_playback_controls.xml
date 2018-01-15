@@ -14,7 +14,7 @@
         android:scaleType="centerCrop"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/podcast_img"
+        app:layout_constraintStart_toStartOf="parent"
         tools:src="@drawable/podcast_img" />
 
     <TextView
@@ -44,6 +44,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="@+id/title"
+        app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintRight_toLeftOf="@+id/play_pause"
         app:layout_constraintTop_toBottomOf="@+id/title"
         android:text="@string/subtitle_label"
@@ -63,5 +64,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/title"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

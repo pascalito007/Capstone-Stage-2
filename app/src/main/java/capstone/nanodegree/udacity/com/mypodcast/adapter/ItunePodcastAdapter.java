@@ -59,7 +59,7 @@ public class ItunePodcastAdapter extends RecyclerView.Adapter<ItunePodcastAdapte
 
         public ItunePodcastViewHolder(View itemView) {
             super(itemView);
-            img = itemView.findViewById(R.id.podcast_img);
+            img = itemView.findViewById(R.id.img_podcast);
             title = itemView.findViewById(R.id.podcast_title);
             itemView.setOnClickListener(this);
         }

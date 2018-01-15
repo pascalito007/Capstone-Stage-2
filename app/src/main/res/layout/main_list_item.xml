@@ -12,7 +12,8 @@
         android:src="@drawable/podcast_img"
         android:contentDescription="@string/podcast_image"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <TextView
         android:id="@+id/tv_podcast_title"
@@ -22,6 +23,7 @@
         android:text="La Dev Team"
         android:textColor="@color/md_black_1000"
         app:layout_constraintLeft_toLeftOf="@+id/img_podcast"
+        app:layout_constraintStart_toStartOf="@+id/img_podcast"
         app:layout_constraintTop_toBottomOf="@+id/img_podcast" />
 
     <TextView
@@ -29,6 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="@+id/tv_podcast_title"
+        app:layout_constraintStart_toStartOf="@+id/tv_podcast_title"
         app:layout_constraintTop_toBottomOf="@+id/tv_podcast_title" />
 
     <ProgressBar
@@ -38,5 +41,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

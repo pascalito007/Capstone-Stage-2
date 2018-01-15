@@ -97,17 +97,18 @@ public class MainCategory1FragmentAdapter extends RecyclerView.Adapter<MainCateg
             subTitle = itemView.findViewById(R.id.tv_podcast_subtitle);
             loading_indicator = itemView.findViewById(R.id.pb_loading_indicator);
             itemView.setOnClickListener(this);
+            img.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             cursor.moveToPosition(getAdapterPosition());
             Log.d("podcastcontentvalue:",Podcast.getPodcastFromCursor(cursor)+"");
-            mOnClickListener.onCategory1ItemClick(Podcast.getPodcastFromCursor(cursor));
+            mOnClickListener.onCategory1ItemClick(Podcast.getPodcastFromCursor(cursor),view);
         }
     }
 
     public interface PodcastClickListener {
-        void onCategory1ItemClick(Podcast podcast);
+        void onCategory1ItemClick(Podcast podcast,View view);
     }
 }

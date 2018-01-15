@@ -36,6 +36,7 @@ import capstone.nanodegree.udacity.com.mypodcast.eventbus.MessageEvent;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.DownloadFragment;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.MainFragment;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.SubscriptionFragment;
+import capstone.nanodegree.udacity.com.mypodcast.login.AccountFragment;
 import capstone.nanodegree.udacity.com.mypodcast.login.LoginFragment;
 import capstone.nanodegree.udacity.com.mypodcast.service.PlayMediaService;
 import capstone.nanodegree.udacity.com.mypodcast.service.PodcastSyncUtils;
@@ -68,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         ButterKnife.bind(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         Intent intent = getIntent();
         if (intent != null) {
             fromEpisode = intent.getStringExtra(Constant.no_account_from_download);
@@ -107,8 +108,15 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_container, mainFragment).commit();
                     break;
                 case R.id.account:
-                    LoginFragment accountFragment = new LoginFragment();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_container, accountFragment).commit();
+                    String email = sharedPreferences.getString(Constant.email, null);
+                    if (email == null) {
+                        LoginFragment accountFragment = new LoginFragment();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, accountFragment).commit();
+
+                    } else {
+                        AccountFragment accountFragment = new AccountFragment();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, accountFragment).commit();
+                    }
                     break;
                 case R.id.download:
                     DownloadFragment downloadFragment = new DownloadFragment();
@@ -155,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 
     @Override
     protected void onResume() {

@@ -1,8 +1,11 @@
 package capstone.nanodegree.udacity.com.mypodcast.fragment;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -36,6 +39,7 @@ import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity;
 import capstone.nanodegree.udacity.com.mypodcast.activity.FetchGpodderMainActivity;
 import capstone.nanodegree.udacity.com.mypodcast.activity.FetchItunePodcastActivity;
+import capstone.nanodegree.udacity.com.mypodcast.activity.SettingsActivity;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.MainCategory1FragmentAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.MainCategory2FragmentAdapter;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.MainFragmentAdapter;
@@ -96,7 +100,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public static SimpleIdlingResource mIdlingResource;
     SharedPreferences sharedPreferences;
 
-    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.main_fragment, container, false);
@@ -146,6 +149,18 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         return view;
     }
 
+    @OnClick(R.id.tv_top_podcast_plus)
+    public void plusTopListClicked() {
+        Intent intent = new Intent(getContext(), FetchGpodderMainActivity.class);
+        startActivity(intent);
+    }
+
+    @OnClick(R.id.tv_recommendations_plus)
+    public void plusRecommendationClicked() {
+        Intent intent = new Intent(getContext(), FetchItunePodcastActivity.class);
+        startActivity(intent);
+    }
+
 
     @OnClick(R.id.img_itune)
     public void imgItuneClick() {
@@ -161,8 +176,14 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @OnClick(R.id.refresh)
     public void onRefreshClicked() {
-        Toast.makeText(getContext(),"Data is refreshing in background",Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Data is refreshing in background", Toast.LENGTH_LONG).show();
         PodcastSyncUtils.startImmediateSync(getContext());
+    }
+
+    @OnClick(R.id.settings)
+    public void settingsClicked() {
+        Intent intent = new Intent(getActivity(), SettingsActivity.class);
+        startActivity(intent);
     }
 
 
@@ -228,40 +249,74 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public void onItemClick(Podcast podcast) {
-        Log.d("podcastcontent:", podcast + "");
-        Cursor cursor = getActivity().getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcast.getPodcastId()}, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            podcast = Podcast.getPodcastFromCursor(cursor);
+    public void onItemClick(Podcast podcast, View view) {
+        ImageView imageView = view.findViewById(R.id.img_podcast);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(getActivity(), imageView, imageView.getTransitionName()
+                    //getString(R.string.podcast_image_transition)
+            ).toBundle();
+           /*startActivity(new Intent(Intent.ACTION_VIEW,
+                    ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))), bundle);*/
+
+            Log.d("podcastcontent:", podcast + "");
+            Cursor cursor = getActivity().getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcast.getPodcastId()}, null);
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                podcast = Podcast.getPodcastFromCursor(cursor);
+            }
+            Intent intent = new Intent(getContext(), EpisodeActivity.class);
+            intent.putExtra(Constant.podcast_extra, Parcels.wrap(podcast));
+            startActivity(intent, bundle);
+        } else {
+            Log.d("podcastcontent:", podcast + "");
+            Cursor cursor = getActivity().getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(podcast.getPodcastId()).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{podcast.getPodcastId()}, null);
+            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                podcast = Podcast.getPodcastFromCursor(cursor);
+            }
+            Intent intent = new Intent(getContext(), EpisodeActivity.class);
+            intent.putExtra(Constant.podcast_extra, Parcels.wrap(podcast));
+            startActivity(intent);
         }
-        Intent intent = new Intent(getContext(), EpisodeActivity.class);
-        intent.putExtra(Constant.podcast_extra, Parcels.wrap(podcast));
-        startActivity(intent);
+
+
     }
 
     @Override
-    public void onGpodderItemClickListener(Podcast podcast) {
+    public void onGpodderItemClickListener(Podcast podcast, View view) {
         Log.d("podcastcontent:", podcast + "");
-        startEpisode(podcast);
+        ImageView imageView = view.findViewById(R.id.img_podcast);
+        startEpisode(podcast, imageView);
     }
 
     @Override
-    public void onCategory2ItemClick(Podcast podcast) {
+    public void onCategory2ItemClick(Podcast podcast, View view) {
         Log.d("podcastcontent:", podcast + "");
-        startEpisode(podcast);
+        ImageView imageView = view.findViewById(R.id.img_podcast);
+        startEpisode(podcast, imageView);
     }
 
     @Override
-    public void onCategory1ItemClick(Podcast podcast) {
+    public void onCategory1ItemClick(Podcast podcast, View view) {
         Log.d("podcastcontent:", podcast + "");
-        startEpisode(podcast);
+        ImageView imageView = view.findViewById(R.id.img_podcast);
+        startEpisode(podcast, imageView);
     }
 
-    public void startEpisode(Podcast podcast) {
-        Intent intent = new Intent(getContext(), EpisodeActivity.class);
-        intent.putExtra(Constant.podcast_extra, Parcels.wrap(podcast));
-        startActivity(intent);
+    public void startEpisode(Podcast podcast, View view) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(getActivity(), view, view.getTransitionName()
+            ).toBundle();
+
+            Intent intent = new Intent(getContext(), EpisodeActivity.class);
+            intent.putExtra(Constant.podcast_extra, Parcels.wrap(podcast));
+            startActivity(intent, bundle);
+
+        } else {
+            Intent intent = new Intent(getContext(), EpisodeActivity.class);
+            intent.putExtra(Constant.podcast_extra, Parcels.wrap(podcast));
+            startActivity(intent);
+        }
     }
 
 

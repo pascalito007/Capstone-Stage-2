@@ -1,14 +1,19 @@
 package capstone.nanodegree.udacity.com.mypodcast.adapter;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.List;
@@ -28,6 +33,9 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ItuneEpi
     public Context context;
     public static final String TAG = "EpisodeAdapter";
     String playList = "";
+    private Interpolator mInterpolator;
+    private int lastAnimPosition = -1;
+    String img;
 
     public EpisodeAdapter(EpisodeClickListener clickListener, Context context, String play) {
         this.mOnClickListener = clickListener;
@@ -69,6 +77,11 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ItuneEpi
         } else if (playList.equals(context.getString(R.string.play_value))) {
             holder.img_play.setVisibility(View.GONE);
             holder.img_download.setVisibility(View.GONE);
+
+        }
+        Glide.with(holder.img_podcast.getContext()).load(img).into(holder.img_podcast);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setAnimation(holder.itemView, position);
         }
     }
 
@@ -77,9 +90,23 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ItuneEpi
         return list == null ? 0 : list.size();
     }
 
-    public void swapAdapter(List<Episode> list) {
+    public void swapAdapter(List<Episode> list,String coverImage) {
         this.list = list;
+        img=coverImage;
         notifyDataSetChanged();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            //sdk21Checker = true;
+            mInterpolator = AnimationUtils.loadInterpolator(context, android.R.interpolator.linear_out_slow_in);
+        }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(ItuneEpisodeViewHolder holder) {
+       // super.onViewDetachedFromWindow(holder);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            holder.itemView.clearAnimation();
+        }
+
     }
 
     public class ItuneEpisodeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -88,6 +115,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ItuneEpi
         View divider;
         ImageView img_download;
         ImageView img_play;
+        ImageView img_podcast;
         //ImageView overflow;
 
         public ItuneEpisodeViewHolder(View itemView) {
@@ -97,6 +125,7 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ItuneEpi
             divider = itemView.findViewById(R.id.divider);
             img_download = itemView.findViewById(R.id.img_download);
             img_play = itemView.findViewById(R.id.img_play);
+            img_podcast = itemView.findViewById(R.id.img_podcast);
             //overflow = itemView.findViewById(R.id.overflow);
             itemView.setOnClickListener(this);
             img_download.setOnClickListener(this);
@@ -115,8 +144,24 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.ItuneEpi
         }
     }
 
+    public void setAnimation(View holder, int position) {
+        if (position > lastAnimPosition) {
+            holder.setTranslationY((position + 1) * 1000);
+            holder.setAlpha(0.85f);
+            holder.animate()
+                    .translationY(0f)
+                    .alpha(1f)
+                    .setInterpolator(mInterpolator)
+                    .setDuration(1000L)
+                    .start();
+            lastAnimPosition = position;
+        }
+    }
+
+
     public interface EpisodeClickListener {
         void onItemClick(Episode episode, View view);
+
         void onDownloadItemClick(Episode episode);
         //void onOverFlowItemClick(Episode episode,View view);
     }

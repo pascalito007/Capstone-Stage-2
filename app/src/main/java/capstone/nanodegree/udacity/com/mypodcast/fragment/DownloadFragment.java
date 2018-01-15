@@ -1,6 +1,5 @@
 package capstone.nanodegree.udacity.com.mypodcast.fragment;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -17,13 +16,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import capstone.nanodegree.udacity.com.mypodcast.R;
-import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeDetailsActivity;
 import capstone.nanodegree.udacity.com.mypodcast.adapter.DownloadAdapter;
+import capstone.nanodegree.udacity.com.mypodcast.model.Episode;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
 import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
@@ -38,13 +39,15 @@ public class DownloadFragment extends Fragment implements LoaderManager.LoaderCa
     DownloadAdapter adapter;
     private static final int DOWNLOAD_LOAD_ID = 33;
     private Unbinder unbinder;
+    List<Episode> list = new ArrayList<>();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view= inflater.inflate(R.layout.download_fragment, container, false);
-        unbinder =ButterKnife.bind(this,view);
-        adapter = new DownloadAdapter(this);
+        View view = inflater.inflate(R.layout.download_fragment, container, false);
+        unbinder = ButterKnife.bind(this, view);
+        adapter = new DownloadAdapter(this,getContext());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         rv_downloads.setLayoutManager(layoutManager);
         rv_downloads.setHasFixedSize(true);
@@ -54,14 +57,11 @@ public class DownloadFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
 
-
-
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case DOWNLOAD_LOAD_ID:
-                return new CursorLoader(getContext(), MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_DOWNLOAD_FLAG+" = ?", new String[]{"Yes"}, null);
+                return new CursorLoader(getContext(), MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI, null, null, null, null);
             default:
                 return null;
         }
@@ -70,7 +70,18 @@ public class DownloadFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null) {
-            adapter.swapAdapter(data);
+            while (data.moveToNext()) {
+                Episode episode = Episode.getEpisodeFromCursor(data);
+                String rootUrl = episode.getMp3FileUrl().substring(0, episode.getMp3FileUrl().indexOf("/", 7));
+                String other = episode.getMp3FileUrl().substring(rootUrl.length());
+                Log.d("other:", other.replaceAll("/", "_"));
+                File file = AppUtils.getFileInInternalMemory(other.replaceAll("/", "_"));
+                if (file != null) {
+                    list.add(episode);
+                }
+            }
+            if (!list.isEmpty())
+                adapter.swapAdapter(list);
         }
 
     }
@@ -81,42 +92,35 @@ public class DownloadFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void onItemClick(long episodeId) {
-        Intent intent = new Intent(getContext(), EpisodeDetailsActivity.class);
-        intent.putExtra(Constant.episode_id,episodeId);
-        startActivity(intent);
+    public void onItemClick(Episode episodeId) {
+        /*Log.d("episodeidcontent:", episodeId + "");
+        Intent intent = new Intent(getActivity(), EpisodeDetailsActivity.class);
+        intent.putExtra(Constant.episode_id, episodeId.getEpisodeId());
+        startActivity(intent);*/
     }
 
     @Override
-    public void onItemDeleteClick(long episodeId, View view) {
-        Cursor cursor = getContext().getContentResolver().query(MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI.buildUpon().appendPath(episodeId+"").build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_ID+" = ?", new String[]{episodeId+""}, null);
-        if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            String mp3_url = cursor.getString(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_MP3_URL));
-            String rootUrl = mp3_url.substring(0, mp3_url.indexOf("/", 7));
-            String other = mp3_url.substring(rootUrl.length());
-            Log.d("other:", other.replaceAll("/", "_"));
-            File file = AppUtils.getFileInInternalMemory(other.replaceAll("/", "_"));
-            if (file != null) {
-                file.delete();
-                ContentValues cv = new ContentValues();
-                cv.put(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_DOWNLOAD_FLAG, "");
-                getContext().getContentResolver().update(MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI.buildUpon().appendPath(episodeId+"").build(), cv, MyPodcastContract.MyPodcastEntry.COLUMN_ID+" = ?", new String[]{episodeId+""});
-                Cursor cursor1 = getContext().getContentResolver().query(MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_DOWNLOAD_FLAG+" = ?", new String[]{"Yes"}, null);
-                if (cursor1 != null && cursor1.getCount() > 0) {
-                    adapter.swapAdapter(cursor1);
-                    Snackbar.make(view, R.string.file_deleted, Snackbar.LENGTH_LONG)
-                            .setAction(Constant.action, null).show();
-                }
-            } else {
-                Snackbar.make(view, R.string.file_not_exist, Snackbar.LENGTH_LONG)
-                        .setAction(Constant.action, null).show();
-            }
-            cursor.close();
+    public void onItemDeleteClick(Episode episodeId, View view) {
+        String mp3_url = episodeId.getMp3FileUrl();
+        String rootUrl = mp3_url.substring(0, mp3_url.indexOf("/", 7));
+        String other = mp3_url.substring(rootUrl.length());
+        Log.d("other:", other.replaceAll("/", "_"));
+        File file = AppUtils.getFileInInternalMemory(other.replaceAll("/", "_"));
+        if (file != null) {
+            file.delete();
+            list.remove(episodeId);
+            adapter.swapAdapter(list);
+            Snackbar.make(view, R.string.file_deleted, Snackbar.LENGTH_LONG)
+                    .setAction(Constant.action, null).show();
+        } else {
+            Snackbar.make(view, R.string.file_not_exist, Snackbar.LENGTH_LONG)
+                    .setAction(Constant.action, null).show();
         }
 
     }
-    @Override public void onDestroyView() {
+
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
     }

@@ -1,8 +1,12 @@
 package capstone.nanodegree.udacity.com.mypodcast.model;
 
+import android.database.Cursor;
+
 import org.parceler.Parcel;
 
 import java.io.Serializable;
+
+import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 
 /**
  * Created by jem001 on 05/12/2017.
@@ -29,8 +33,17 @@ public class Episode{
      String duration;
      String mp3FileUrl;
      String fullDescription;
+     Long episodeId;
 
     public Episode() {
+    }
+
+    public Long getEpisodeId() {
+        return episodeId;
+    }
+
+    public void setEpisodeId(Long episodeId) {
+        this.episodeId = episodeId;
     }
 
     public String getPodcastId() {
@@ -162,6 +175,20 @@ public class Episode{
                 ", duration='" + duration + '\'' +
                 ", mp3FileUrl='" + mp3FileUrl + '\'' +
                 ", fullDescription='" + fullDescription + '\'' +
+                ", episodeId=" + episodeId +
                 '}';
+    }
+
+    public static Episode getEpisodeFromCursor(Cursor cursor) {
+
+        Episode episode =new Episode();
+
+        episode.setEpisodeId(cursor.getLong(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_ID)));
+        episode.setTitle(cursor.getString(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_TITLE)));
+        episode.setDescription(cursor.getString(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_DESCRIPTION)));
+        episode.setPodcastId(cursor.getString(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID)));
+        episode.setMp3FileUrl(cursor.getString(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_MP3_URL)));
+        //episode.setSubscribeFlag(cursor.getString(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_SUBSCRIBE_FLAG)));
+        return episode;
     }
 }

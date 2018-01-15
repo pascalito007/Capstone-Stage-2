@@ -22,7 +22,7 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
  */
 
 public class ViewPagerSlide1Fragment extends Fragment {
-    @BindView(R.id.podcast_img)
+    @BindView(R.id.img_podcast)
     ImageView imageView;
     private Unbinder unbinder;
     @Nullable

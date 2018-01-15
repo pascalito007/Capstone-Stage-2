@@ -43,6 +43,7 @@ public class MainFragmentTopListAdapter extends RecyclerView.Adapter<MainFragmen
     public void onBindViewHolder(PodcastViewHolder holder, int position) {
         if (cursor != null) {
             cursor.moveToPosition(position);
+
             String title = cursor.getString(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_TITLE));
             if (title != null) {
                 String titleFinal = title.substring(0, (title.length() <= 20 ? title.length() : 20));
@@ -73,12 +74,12 @@ public class MainFragmentTopListAdapter extends RecyclerView.Adapter<MainFragmen
                     return false;
                 }
             }).into(holder.img);
-            holder.imgSubscribePodcast.setOnClickListener(new View.OnClickListener() {
+            /*holder.imgSubscribePodcast.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     holder.imgSubscribePodcast.setImageResource(R.drawable.ic_subscribe_notification_off);
                 }
-            });
+            });*/
         }
     }
 
@@ -94,7 +95,7 @@ public class MainFragmentTopListAdapter extends RecyclerView.Adapter<MainFragmen
 
     public class PodcastViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView img;
-        ImageView imgSubscribePodcast;
+        //ImageView imgSubscribePodcast;
         TextView title;
         TextView subTitle;
         TextView subscribers;
@@ -105,23 +106,24 @@ public class MainFragmentTopListAdapter extends RecyclerView.Adapter<MainFragmen
         public PodcastViewHolder(View itemView) {
             super(itemView);
             img = itemView.findViewById(R.id.img_podcast);
-            imgSubscribePodcast = itemView.findViewById(R.id.img_subscribe_podcast);
+            //imgSubscribePodcast = itemView.findViewById(R.id.img_subscribe_podcast);
             title = itemView.findViewById(R.id.tv_podcast_title);
             subTitle = itemView.findViewById(R.id.tv_podcast_subtitle);
             divider = itemView.findViewById(R.id.divider);
             subscribers = itemView.findViewById(R.id.tv_subscribers);
             loading_indicator = itemView.findViewById(R.id.pb_loading_indicator);
             itemView.setOnClickListener(this);
+            //img.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             cursor.moveToPosition(getAdapterPosition());
-            mOnClickListener.onGpodderItemClickListener(Podcast.getPodcastFromCursor(cursor));
+            mOnClickListener.onGpodderItemClickListener(Podcast.getPodcastFromCursor(cursor),view);
         }
     }
 
     public interface PodcastClickListener {
-        void onGpodderItemClickListener(Podcast podcast);
+        void onGpodderItemClickListener(Podcast podcast,View view);
     }
 }
