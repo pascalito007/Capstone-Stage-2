@@ -1,5 +1,6 @@
 package capstone.nanodegree.udacity.com.mypodcast.fragment;
 
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,20 +25,27 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
 public class ViewPagerSlide1Fragment extends Fragment {
     @BindView(R.id.img_podcast)
     ImageView imageView;
+    @BindView(R.id.podcast_img_clean)
+    ImageView smallImage;
     private Unbinder unbinder;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.view_pager_slide, container, false);
-        unbinder =ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.view_pager_slide, container, false);
+        unbinder = ButterKnife.bind(this, view);
         Glide.with(this)
                 .load(getString(R.string.image_slide_url))
                 .apply(RequestOptions.bitmapTransform(new BlurTransformation(150)))
                 .into(imageView);
+        Glide.with(this)
+                .load(getString(R.string.image_slide_url))
+                .into(smallImage);
         return view;
     }
 
-    @Override public void onDestroyView() {
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
     }

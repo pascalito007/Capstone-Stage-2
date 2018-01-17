@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,19 +41,21 @@ public class DownloadFragment extends Fragment implements LoaderManager.LoaderCa
     private static final int DOWNLOAD_LOAD_ID = 33;
     private Unbinder unbinder;
     List<Episode> list = new ArrayList<>();
-
+    @BindView(R.id.available)
+    TextView available;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.download_fragment, container, false);
         unbinder = ButterKnife.bind(this, view);
-        adapter = new DownloadAdapter(this,getContext());
+        adapter = new DownloadAdapter(this, getContext());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         rv_downloads.setLayoutManager(layoutManager);
         rv_downloads.setHasFixedSize(true);
         rv_downloads.setAdapter(adapter);
         getLoaderManager().initLoader(DOWNLOAD_LOAD_ID, null, this);
+        available.setVisibility(View.VISIBLE);
         return view;
     }
 
@@ -69,7 +72,8 @@ public class DownloadFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data != null) {
+        if (data != null && data.getCount()!=0) {
+            available.setVisibility(View.GONE);
             while (data.moveToNext()) {
                 Episode episode = Episode.getEpisodeFromCursor(data);
                 String rootUrl = episode.getMp3FileUrl().substring(0, episode.getMp3FileUrl().indexOf("/", 7));

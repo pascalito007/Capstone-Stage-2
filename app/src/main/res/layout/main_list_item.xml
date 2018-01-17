@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="@dimen/five_dp">
 
     <ImageView
@@ -20,8 +21,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/five_dp"
-        android:text="La Dev Team"
-        android:textColor="@color/md_black_1000"
+        tools:text="@string/pod_title_placehold"
+        android:textColor="@color/black"
         app:layout_constraintLeft_toLeftOf="@+id/img_podcast"
         app:layout_constraintStart_toStartOf="@+id/img_podcast"
         app:layout_constraintTop_toBottomOf="@+id/img_podcast" />

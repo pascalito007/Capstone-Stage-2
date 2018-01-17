@@ -103,11 +103,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "257154702665-idfn8fc1tnq94le3sha1c3mfpuflgaei.apps.googleusercontent.com",
+          "client_id": "257154702665-21gkjg0t1ek1p3m7pcqul3m6gsgbpgvs.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "capstone.nanodegree.udacity.com.mypodcast.paid",
-            "certificate_hash": "a73f924adf31d7388c9cef4261a7317cbff1348c"
+            "certificate_hash": "0c6bc4900935a35b58291b09fa4455b2cba2d7f7"
           }
         },
         {

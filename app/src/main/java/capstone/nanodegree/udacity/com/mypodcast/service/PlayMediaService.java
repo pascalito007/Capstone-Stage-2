@@ -52,8 +52,8 @@ import capstone.nanodegree.udacity.com.mypodcast.utils.Constant;
 
 public class PlayMediaService extends Service implements ExoPlayer.EventListener {
     public ExoPlayer mExoPlayer;
-    private static MediaSessionCompat mMediaSession;
-    private PlaybackStateCompat.Builder mStateBuilder;
+    public   MediaSessionCompat mMediaSession;
+    public PlaybackStateCompat.Builder mStateBuilder;
     private NotificationManager mNotificationManager;
     String mp3_url;
     public SharedPreferences sharedPreferences;
@@ -97,7 +97,7 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
                 }
             } else {
                 if (intent.getAction().equals(Constant.ACTION_GET_EXOPLAYER_INSTANCE)) {
-                    EventBus.getDefault().post(new MessageEvent(sharedPreferences.getInt(Constant.player_state, 0), sharedPreferences.getLong(Constant.player_current_position, 0), (SimpleExoPlayer) this.mExoPlayer));
+                    EventBus.getDefault().post(new MessageEvent(sharedPreferences.getInt(Constant.player_state, 0), sharedPreferences.getLong(Constant.player_current_position, 0), (SimpleExoPlayer) this.mExoPlayer,mMediaSession));
                 }
             }
         }
@@ -130,7 +130,7 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
             //Log.d("listenervalue:", myServiceListener + "");
             SimpleExoPlayer exoPlayer = (SimpleExoPlayer) mExoPlayer;
             Log.d("playervalue:", exoPlayer + "");
-            EventBus.getDefault().post(new MessageEvent(mExoPlayer.getPlaybackState(), sharedPreferences.getLong(Constant.player_current_position, 0), exoPlayer));
+            EventBus.getDefault().post(new MessageEvent(mExoPlayer.getPlaybackState(), sharedPreferences.getLong(Constant.player_current_position, 0), exoPlayer,mMediaSession));
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putLong(Constant.player_current_position, mExoPlayer.getCurrentPosition());
             editor.putInt(Constant.bottom_play_pause_icon,R.drawable.exo_controls_pause);
@@ -185,9 +185,6 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
     }
 
 
-    public ExoPlayer getExoPlayer() {
-        return this.mExoPlayer;
-    }
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
@@ -223,7 +220,7 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
         Log.d("stateserviceplay:", mStateBuilder.build().getState() + "|" + mExoPlayer + "|currentPosition:" + mExoPlayer.getCurrentPosition());
         showNotification(mStateBuilder.build());
         SimpleExoPlayer exoPlayer = (SimpleExoPlayer) mExoPlayer;
-        EventBus.getDefault().post(new MessageEvent(mStateBuilder.build().getState(), mExoPlayer.getCurrentPosition(), exoPlayer));
+        EventBus.getDefault().post(new MessageEvent(mStateBuilder.build().getState(), mExoPlayer.getCurrentPosition(), exoPlayer,mMediaSession));
     }
 
     @Override
@@ -261,6 +258,7 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
         public void onPlay() {
 
             mExoPlayer.setPlayWhenReady(true);
+            Log.d("playpress","yes");
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), PlayerWidgetProvider.class));
             PlayerWidgetProvider.updateMediaTitle(getApplicationContext(), appWidgetManager, sharedPreferences.getString(Constant.bottom_title, null), R.drawable.exo_controls_pause, appWidgetIds);
@@ -273,7 +271,7 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
 
         @Override
         public void onPause() {
-
+            Log.d("pausepress","yes");
             mExoPlayer.setPlayWhenReady(false);
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(getApplicationContext());
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), PlayerWidgetProvider.class));
@@ -341,7 +339,7 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
 
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mNotificationManager.notify(0, builder.build());
-        EventBus.getDefault().post(new MessageEvent(state.getState(), sharedPreferences.getLong(Constant.player_current_position, 0), (SimpleExoPlayer) mExoPlayer));
+        EventBus.getDefault().post(new MessageEvent(state.getState(), sharedPreferences.getLong(Constant.player_current_position, 0), (SimpleExoPlayer) mExoPlayer,mMediaSession));
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putLong(Constant.player_current_position, mExoPlayer.getCurrentPosition());
         editor.putInt(Constant.bottom_play_pause_icon, icon);
@@ -357,9 +355,9 @@ public class PlayMediaService extends Service implements ExoPlayer.EventListener
     }
 
 
-    public MediaSessionCompat getMediaSession() {
+   /* public static MediaSessionCompat getMediaSession() {
         return mMediaSession;
-    }
+    }*/
 
     private void releasePlayer() {
         if (mNotificationManager != null)

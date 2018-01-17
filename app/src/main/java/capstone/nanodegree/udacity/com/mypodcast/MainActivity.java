@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -27,17 +28,23 @@ import com.bumptech.glide.Glide;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.parceler.Parcels;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import capstone.nanodegree.udacity.com.mypodcast.IdlingResource.SimpleIdlingResource;
+import capstone.nanodegree.udacity.com.mypodcast.activity.EpisodeActivity;
+import capstone.nanodegree.udacity.com.mypodcast.activity.PlayMediaActivity;
+import capstone.nanodegree.udacity.com.mypodcast.eventbus.DataEvent;
 import capstone.nanodegree.udacity.com.mypodcast.eventbus.MessageEvent;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.DownloadFragment;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.MainFragment;
 import capstone.nanodegree.udacity.com.mypodcast.fragment.SubscriptionFragment;
 import capstone.nanodegree.udacity.com.mypodcast.login.AccountFragment;
 import capstone.nanodegree.udacity.com.mypodcast.login.LoginFragment;
+import capstone.nanodegree.udacity.com.mypodcast.model.Episode;
+import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 import capstone.nanodegree.udacity.com.mypodcast.service.PlayMediaService;
 import capstone.nanodegree.udacity.com.mypodcast.service.PodcastSyncUtils;
 import capstone.nanodegree.udacity.com.mypodcast.utils.AppUtils;
@@ -76,7 +83,15 @@ public class MainActivity extends AppCompatActivity {
             fromEpisode = intent.getStringExtra(Constant.no_account_from_download);
 
         }
-
+        if (sharedPreferences.getInt(Constant.cursor_count, 0) == 0) {
+            findViewById(R.id.pb_loading).setVisibility(View.VISIBLE);
+            hide();
+        } else {
+            findViewById(R.id.pb_loading).setVisibility(View.GONE);
+            if (savedInstanceState == null) {
+                show();
+            }
+        }
 
         Log.d("oncreatecontainer:", "Yes" + sharedPreferences.getString(Constant.bottom_title, null) + "|" + sharedPreferences.getString(Constant.bottom_mp3_url, null));
         getIdlingResource();
@@ -88,45 +103,84 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_container, loginFragment).commit();
 
             }
-        } else {
-            if (savedInstanceState == null) {
-                MainFragment mainFragment = new MainFragment();
-                getSupportFragmentManager().beginTransaction().replace(R.id.main_container, mainFragment).commit();
-            }
         }
+        //else {
+            /*if (savedInstanceState == null) {
+                if (findViewById(R.id.main_container) != null) {
+                    findViewById(R.id.main_container).setVisibility(View.VISIBLE);
+                    findViewById(R.id.img_refresh).setVisibility(View.GONE);
+                    findViewById(R.id.img_sad).setVisibility(View.GONE);
+                    bottomNavigationView.setClickable(true);
+                    MainFragment mainFragment = new MainFragment();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_container, mainFragment).commit();
+                } else {
+                    findViewById(R.id.main_container).setVisibility(View.GONE);
+                    findViewById(R.id.img_refresh).setVisibility(View.GONE);
+                    findViewById(R.id.img_sad).setVisibility(View.GONE);
+                    bottomNavigationView.setClickable(false);
+                }
+            }*/
+        // }
 
 
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.subscription:
-                    SubscriptionFragment fragment = new SubscriptionFragment();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
-                    MainFragment.mIdlingResource = mIdlingResource;
-                    break;
-                case R.id.action_discover:
-                    MainFragment mainFragment = new MainFragment();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_container, mainFragment).commit();
-                    break;
-                case R.id.account:
-                    String email = sharedPreferences.getString(Constant.email, null);
-                    if (email == null) {
-                        LoginFragment accountFragment = new LoginFragment();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, accountFragment).commit();
+            if (sharedPreferences.getInt(Constant.cursor_count, 0) > 0) {
+                switch (item.getItemId()) {
+                    case R.id.subscription:
+                        SubscriptionFragment fragment = new SubscriptionFragment();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, fragment).commit();
+                        MainFragment.mIdlingResource = mIdlingResource;
+                        break;
+                    case R.id.action_discover:
+                        MainFragment mainFragment = new MainFragment();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, mainFragment).commit();
+                        break;
+                    case R.id.account:
+                        String email = sharedPreferences.getString(Constant.email, null);
+                        if (email == null) {
+                            LoginFragment accountFragment = new LoginFragment();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.main_container, accountFragment).commit();
 
-                    } else {
-                        AccountFragment accountFragment = new AccountFragment();
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, accountFragment).commit();
-                    }
-                    break;
-                case R.id.download:
-                    DownloadFragment downloadFragment = new DownloadFragment();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.main_container, downloadFragment).commit();
-                    break;
-                default:
-                    break;
+                        } else {
+                            AccountFragment accountFragment = new AccountFragment();
+                            getSupportFragmentManager().beginTransaction().replace(R.id.main_container, accountFragment).commit();
+                        }
+                        break;
+                    case R.id.download:
+                        DownloadFragment downloadFragment = new DownloadFragment();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, downloadFragment).commit();
+                        break;
+                    default:
+                        break;
+                }
             }
+
             return true;
         });
+      /*  if (controlsContainer != null) {
+
+        }*/
+        /*controlsContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String episodeId = sharedPreferences.getString(Constant.episode_id, null);
+                Log.d("episodidvalue", episodeId + "");
+                if (episodeId != null && !episodeId.isEmpty()) {
+                    Cursor cursor = getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{episodeId}, null);
+                    if (cursor != null && cursor.getCount() != 0) {
+                        cursor.moveToFirst();
+                        Episode episode = Episode.getEpisodeFromCursor(cursor);
+                        cursor.close();
+                        Intent intent1 = new Intent(MainActivity.this, EpisodeActivity.class);
+
+                        intent1.putExtra(Constant.img, sharedPreferences.getString(Constant.bottom_img_cover, null));
+                        intent1.putExtra(Constant.episode_extra, Parcels.wrap(episode));
+                        startActivity(intent1);
+                    }
+                }
+
+            }
+        });*/
     }
 
 
@@ -219,6 +273,53 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void dataState(DataEvent event) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (event == null || event.count == 0) {
+                    Log.d("datasize:", event + "");
+                    hide();
+                } else {
+                    Log.d("datasize:", event.count + "");
+                    show();
+                }
+            }
+        });
+    }
+
+    public void show() {
+        findViewById(R.id.main_container).setVisibility(View.VISIBLE);
+        findViewById(R.id.img_refresh).setVisibility(View.GONE);
+        findViewById(R.id.img_sad).setVisibility(View.GONE);
+        bottomNavigationView.setClickable(true);
+        bottomNavigationView.setFocusable(true);
+        findViewById(R.id.pb_loading).setVisibility(View.GONE);
+
+        MainFragment mainFragment = new MainFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_container, mainFragment).commit();
+    }
+
+    public void hide() {
+        findViewById(R.id.main_container).setVisibility(View.GONE);
+        findViewById(R.id.img_refresh).setVisibility(View.VISIBLE);
+        findViewById(R.id.img_sad).setVisibility(View.VISIBLE);
+        findViewById(R.id.pb_loading).setVisibility(View.GONE);
+        bottomNavigationView.setClickable(false);
+        bottomNavigationView.setFocusable(false);
+    }
+
+
+    @OnClick(R.id.img_refresh)
+    public void refreshClicked() {
+        findViewById(R.id.img_refresh).setVisibility(View.GONE);
+        findViewById(R.id.pb_loading).setVisibility(View.VISIBLE);
+        //findViewById(R.id.img_sad).setVisibility(View.GONE);
+        PodcastSyncUtils.startImmediateSync(this);
 
     }
 

@@ -3,17 +3,22 @@ package capstone.nanodegree.udacity.com.mypodcast.service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.annimon.stream.Collectors;
 import com.annimon.stream.Stream;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import capstone.nanodegree.udacity.com.mypodcast.R;
+import capstone.nanodegree.udacity.com.mypodcast.eventbus.DataEvent;
 import capstone.nanodegree.udacity.com.mypodcast.model.Category;
 import capstone.nanodegree.udacity.com.mypodcast.model.Podcast;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
@@ -35,8 +40,10 @@ public class PodcastSyncTask {
 
             //Retrieve topList from iTune (for Recommendations)
 
-            String iTuneTopListStringJson = NetworkUtils.okHttpGetRequestStringResult(Constant.itune_root_url + Locale.getDefault().getLanguage() + Constant.itune_top_list_url);
-            List<Podcast> ituneList = NetworkUtils.ituneTopListFromJson(iTuneTopListStringJson);
+            String iTuneTopListStringJson = NetworkUtils.okHttpGetRequestStringResult(Constant.itune_root_url + Locale.getDefault().getLanguage() + Constant.itune_top_list_url1 + sp2.getInt(context.getString(R.string.pref_top_podcast_key), context.getResources().getInteger(R.integer.pref_top_podcast_default)) + Constant.itune_top_list_url2);
+            List<Podcast> ituneList = null;
+            if (iTuneTopListStringJson != null)
+                ituneList = NetworkUtils.ituneTopListFromJson(iTuneTopListStringJson);
             if (ituneList != null && ituneList.size() != 0) {
                 List<Podcast> randList = new ArrayList<>();
                 for (int i = 0; i < ituneList.size(); i++) {
@@ -62,17 +69,18 @@ public class PodcastSyncTask {
                         }
                         context.getContentResolver().bulkInsert(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, values);
                     }
-                    editor2.putString(Constant.recommandation, "Recommendations");
+                    editor2.putString(Constant.recommandation, context.getString(R.string.recommend_label));
                     editor2.apply();
                 }
             }
 
 
-
             //Retrieve topList from gPodder (for Top List)
-            String gPodderTopListStringJson = NetworkUtils.okHttpGetRequestStringResult(Constant.gpodder_top_podcast_url);
+            String gPodderTopListStringJson = NetworkUtils.okHttpGetRequestStringResult(Constant.gpodder_top_podcast_url + sp2.getInt(context.getString(R.string.pref_top_podcast_key), context.getResources().getInteger(R.integer.pref_top_podcast_default)) + ".json");
+            List<Podcast> gpodderList = null;
+            if (gPodderTopListStringJson != null)
+                gpodderList = NetworkUtils.gPodderTopListFromJson(gPodderTopListStringJson);
 
-            List<Podcast> gpodderList = NetworkUtils.gPodderTopListFromJson(gPodderTopListStringJson);
             List<Podcast> randList1 = new ArrayList<>();
             if (gpodderList != null && !gpodderList.isEmpty()) {
                 for (int i = 0; i < gpodderList.size(); i++) {
@@ -97,30 +105,30 @@ public class PodcastSyncTask {
 
                         context.getContentResolver().bulkInsert(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, values);
                     }
-                    editor2.putString(Constant.toplist, "Top Podcast");
+                    editor2.putString(Constant.toplist, context.getString(R.string.top_pod_label));
                     editor2.apply();
                 }
             }
 
 
-
-
-
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = sp.edit();
             //Retrieve categories
-            String gPodderCategoriesStringJson = NetworkUtils.okHttpGetRequestStringResult(Constant.gpodder_category_podcast_url);
-
-            List<Category> list = NetworkUtils.getGpodderCategoryList(gPodderCategoriesStringJson);
+            String gPodderCategoriesStringJson = NetworkUtils.okHttpGetRequestStringResult(Constant.gpodder_category_podcast_url + sp.getInt(context.getString(R.string.pref_top_podcast_key), context.getResources().getInteger(R.integer.pref_top_podcast_default)) + ".json");
+            List<Category> list = null;
+            if (gPodderCategoriesStringJson != null)
+                list = NetworkUtils.getGpodderCategoryList(gPodderCategoriesStringJson);
             //Get random 2 categories
-            if (!list.isEmpty()) {
+            if (list != null && !list.isEmpty()) {
                 //First category
                 Category category1 = list.get(new Random().nextInt(Stream.of(list).filter(e -> e.getUsage() >= 6).collect(Collectors.toList()).size()));
                 Log.d("podcastcat11:", category1.toString());
                 editor.putString(Constant.category1, category1.getTitle());
                 editor.apply();
-                String category1PodcastListJson = NetworkUtils.okHttpGetRequestStringResult(Constant.root_gpodder_feed_url_part + category1.getTag() + "/50.json");
-                List<Podcast> category1PodcastList = NetworkUtils.gPodderTopListFromJson(category1PodcastListJson);
+                String category1PodcastListJson = NetworkUtils.okHttpGetRequestStringResult(Constant.root_gpodder_feed_url_part + category1.getTag() + "/" + sp.getInt(context.getString(R.string.pref_top_podcast_key), context.getResources().getInteger(R.integer.pref_top_podcast_default)) + ".json");
+                List<Podcast> category1PodcastList = null;
+                if (category1PodcastListJson != null)
+                    category1PodcastList = NetworkUtils.gPodderTopListFromJson(category1PodcastListJson);
                 Log.d("category1size:", category1PodcastList.size() + "");
                 if (category1PodcastList != null && !category1PodcastList.isEmpty()) {
                     List<Podcast> randList = new ArrayList<>();
@@ -146,12 +154,15 @@ public class PodcastSyncTask {
                 }
 
                 //Second category
+
                 Category category2 = list.get(new Random().nextInt(Stream.of(list).filter(e -> e.getUsage() >= 6).collect(Collectors.toList()).size()));
                 Log.d("podcastcat22:", category2.toString());
                 editor.putString(Constant.category2, category2.getTitle());
                 editor.apply();
-                String category2PodcastListJson = NetworkUtils.okHttpGetRequestStringResult(Constant.root_gpodder_feed_url_part + category2.getTag() + "/50.json");
-                List<Podcast> category2PodcastList = NetworkUtils.gPodderTopListFromJson(category2PodcastListJson);
+                String category2PodcastListJson = NetworkUtils.okHttpGetRequestStringResult(Constant.root_gpodder_feed_url_part + category2.getTag() + "/" + sp.getInt(context.getString(R.string.pref_top_podcast_key), context.getResources().getInteger(R.integer.pref_top_podcast_default)) + ".json");
+                List<Podcast> category2PodcastList = null;
+                if (category2PodcastListJson != null)
+                    category2PodcastList = NetworkUtils.gPodderTopListFromJson(category2PodcastListJson);
                 Log.d("category1size:", category2PodcastList.size() + "");
                 if (category2PodcastList != null && !category2PodcastList.isEmpty()) {
                     List<Podcast> randList = new ArrayList<>();
@@ -177,7 +188,16 @@ public class PodcastSyncTask {
                 }
 
             }
-
+            Cursor c = context.getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI, null, null, null, null);
+            if (c == null || c.getCount() == 0) {
+                EventBus.getDefault().post(new DataEvent(0));
+                editor.putInt(Constant.cursor_count, 0);
+                editor.apply();
+            } else {
+                EventBus.getDefault().post(new DataEvent(c.getCount()));
+                editor.putInt(Constant.cursor_count, c.getCount());
+                editor.apply();
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

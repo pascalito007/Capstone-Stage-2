@@ -1,8 +1,10 @@
 package capstone.nanodegree.udacity.com.mypodcast.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -42,12 +44,15 @@ public class GpodderCategoryFragment extends Fragment implements GpodderCategory
     @BindView(R.id.pb_loading_indicator)
     ProgressBar pb_loading_indicator;
     private Unbinder unbinder;
+    SharedPreferences sharedPreferences;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.gpodder_fragment, container, false);
         unbinder =ButterKnife.bind(this,view);
+        sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (pb_loading_indicator!=null)
         pb_loading_indicator.setVisibility(View.VISIBLE);
         new GpodderCategoryTask().execute();
         adapter = new GpodderCategoryPodcastAdapter(this);
@@ -64,7 +69,7 @@ public class GpodderCategoryFragment extends Fragment implements GpodderCategory
 
     @Override
     public void onItemClick(Category category) {
-        Intent intent=new Intent(getContext(),FetchGpodderCategoryPodcastActivity.class);
+        Intent intent=new Intent(getActivity(),FetchGpodderCategoryPodcastActivity.class);
         intent.putExtra(Constant.category_extra,Parcels.wrap(category));
         startActivity(intent);
     }
@@ -76,7 +81,7 @@ public class GpodderCategoryFragment extends Fragment implements GpodderCategory
         protected String doInBackground(Void... voids) {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url(Constant.gpodder_category_podcast_url)
+                    .url(Constant.gpodder_category_podcast_url+sharedPreferences.getString(getString(R.string.pref_top_podcast_key),getResources().getInteger(R.integer.pref_top_podcast_default)+"")+".json")
                     .build();
             Response response = null;
             String result = null;
@@ -103,6 +108,7 @@ public class GpodderCategoryFragment extends Fragment implements GpodderCategory
                     e.printStackTrace();
                 }
             }
+            if (pb_loading_indicator!=null)
             pb_loading_indicator.setVisibility(View.GONE);
         }
 

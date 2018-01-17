@@ -102,17 +102,16 @@
             </intent-filter>
         </receiver>
 
-        <!--
+        <!-- This meta-data tag is required to use Google Play Services. -->
+   <!--     <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        &lt;!&ndash; Include the AdActivity configChanges and theme. &ndash;&gt;
         <activity
-            android:name=".activity.EpisodeDetailsActivity"
-            android:label="@string/title_activity_episode_details"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="capstone.nanodegree.udacity.com.mypodcast.MainActivity" />
-        </activity>
-        -->
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:theme="@android:style/Theme.Translucent" />-->
+
         <activity
             android:name=".activity.FetchGpodderCategoryPodcastActivity"
             android:label="@string/title_activity_fetch_gpodder_category_podcast"
@@ -132,17 +131,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/player_widget_info" />
         </receiver>
-        <!--
-        &lt;!&ndash; This meta-data tag is required to use Google Play Services. &ndash;&gt;
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-        &lt;!&ndash; Include the AdActivity configChanges and theme. &ndash;&gt;
-        <activity
-            android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:theme="@android:style/Theme.Translucent" />
-        -->
 
         <activity android:name=".activity.SettingsActivity"
             android:theme="@style/AppTheme"

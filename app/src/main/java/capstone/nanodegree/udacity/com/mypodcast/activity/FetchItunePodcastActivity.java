@@ -1,7 +1,9 @@
 package capstone.nanodegree.udacity.com.mypodcast.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +43,7 @@ public class FetchItunePodcastActivity extends AppCompatActivity implements Itun
     ProgressBar pb_loading_indicator;
     List<Podcast> results = new ArrayList<>();
     ItunePodcastAdapter adapter;
+    SharedPreferences sharedPreferences;
 
 
     @Override
@@ -48,11 +51,13 @@ public class FetchItunePodcastActivity extends AppCompatActivity implements Itun
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fetch_itune);
         ButterKnife.bind(this);
+        sharedPreferences= PreferenceManager.getDefaultSharedPreferences(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         String lang = Locale.getDefault().getLanguage();
-        String url = Constant.itune_root_url + lang + Constant.itune_top_list_url;
+
+        String url = Constant.itune_root_url + lang + Constant.itune_top_list_url1+sharedPreferences.getString(getString(R.string.pref_top_podcast_key),getResources().getInteger(R.integer.pref_top_podcast_default)+"")+Constant.itune_top_list_url2;
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
@@ -84,7 +89,7 @@ public class FetchItunePodcastActivity extends AppCompatActivity implements Itun
                         ex.printStackTrace();
                     }
                     FetchItunePodcastActivity.this.runOnUiThread(() -> {
-                        adapter = new ItunePodcastAdapter(results, FetchItunePodcastActivity.this);
+                        adapter = new ItunePodcastAdapter(results, FetchItunePodcastActivity.this,FetchItunePodcastActivity.this);
                         rvItune.setAdapter(adapter);
                         pb_loading_indicator.setVisibility(View.GONE);
                     });

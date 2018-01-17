@@ -79,7 +79,7 @@
             android:nextFocusUp="@+id/til_password"
             android:layout_marginBottom="@dimen/lv_header_text_size"
             android:contentDescription="@string/sign_in_button_label"
-            android:background="@color/primary"
+            android:background="@color/colorPrimary"
             android:text="@string/button_signin_with_password"
             android:textColor="@android:color/white" />
 
@@ -114,7 +114,6 @@
                 android:layout_width="wrap_content"
                 android:nextFocusLeft="@+id/tv_dont_have_account"
                 android:layout_height="wrap_content"
-                android:onClick="onSignUpPressed"
                 android:text="@string/button_create_account" />
         </LinearLayout>
     </LinearLayout>

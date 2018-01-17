@@ -113,7 +113,10 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity()).enableAutoManage(getActivity(), this).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
+        try {
+            mGoogleApiClient = new GoogleApiClient.Builder(getActivity()).enableAutoManage(getActivity(), this).addApi(Auth.GOOGLE_SIGN_IN_API, gso).build();
+        } catch (Exception e) {
+        }
         return view;
     }
 
@@ -291,7 +294,7 @@ public class LoginFragment extends Fragment implements GoogleApiClient.OnConnect
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(LOG_TAG, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(mEditTextPasswordInput, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(mEditTextPasswordInput, R.string.auth_failed, Snackbar.LENGTH_SHORT).show();
                         }
 
                         // [START_EXCLUDE]

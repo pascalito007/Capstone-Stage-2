@@ -117,8 +117,9 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="one_handred_seventy_five">175dp</dimen>
     <dimen name="fourty_dp">40dp</dimen>
     <dimen name="fourteen_dp">14dp</dimen>
-    <dimen name="twenty_four_sp">24sp</dimen>
     <dimen name="fifty_sixe_dp">56dp</dimen>
     <dimen name="one_handred_dp">100dp</dimen>
+    <dimen name="twenty_four_sp">24sp</dimen>
+    <dimen name="two_dp">2dp</dimen>
 
 </resources>

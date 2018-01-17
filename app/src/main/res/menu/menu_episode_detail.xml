@@ -4,6 +4,6 @@
     <item android:title="Share"
         android:id="@+id/action_share"
         android:icon="@drawable/abc_ic_menu_share_mtrl_alpha"
-        android:iconTint="@color/md_white_1000"
+        android:iconTint="@android:color/white"
         app:showAsAction="always"/>
 </menu>

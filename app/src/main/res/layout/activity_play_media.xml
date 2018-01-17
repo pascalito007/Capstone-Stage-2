@@ -26,26 +26,29 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!--<com.google.android.gms.ads.AdView
-            android:id="@+id/adView"
+        <fragment
+            android:id="@+id/ad_container"
+            android:name="capstone.nanodegree.udacity.com.mypodcast.AdviewFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:adSize="BANNER"
-            app:adUnitId="@string/banner_ad_unit_id"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />-->
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout="@layout/fragment_adview" />
+
 
         <com.google.android.exoplayer2.ui.SimpleExoPlayerView
             android:id="@+id/playerView"
             android:layout_width="@dimen/zero_dp"
             android:layout_height="@dimen/zero_dp"
             app:layout_constraintBottom_toTopOf="@+id/card_items"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/ad_container" />
 
         <ProgressBar
             android:id="@+id/pb_loading_indicator"
@@ -53,9 +56,9 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/card_items"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -65,9 +68,9 @@
             android:layout_height="wrap_content"
             app:cardElevation="@dimen/four_dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/playerView">
 
@@ -85,16 +88,6 @@
                     android:gravity="center">
 
                     <ImageView
-                        android:id="@+id/subscription"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/twenty_dp"
-                        android:layout_marginStart="@dimen/twenty_dp"
-                        android:contentDescription="@string/subscription_icon_img"
-                        android:src="@drawable/ic_favorit"
-                        android:tint="@color/primary" />
-
-                    <ImageView
                         android:id="@+id/download"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -102,7 +95,7 @@
                         android:layout_centerHorizontal="true"
                         android:contentDescription="@string/download_button_img"
                         android:src="@drawable/ic_drawer_download"
-                        android:tint="@color/primary" />
+                        android:tint="@color/colorPrimary" />
 
                     <ImageView
                         android:id="@+id/share"
@@ -113,10 +106,9 @@
                         android:layout_alignParentTop="true"
                         android:layout_marginEnd="@dimen/twenty_dp"
                         android:layout_marginRight="@dimen/twenty_dp"
-                        android:layout_marginStart="@dimen/twenty_dp"
                         android:contentDescription="@string/share_button_img"
                         android:src="@drawable/ic_share"
-                        android:tint="@color/primary" />
+                        android:tint="@color/colorPrimary" />
 
 
                 </RelativeLayout>
@@ -126,7 +118,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/one_dp"
                     android:layout_marginTop="@dimen/ten_dp"
-                    android:background="@color/md_blue_grey_100"
+                    android:background="@color/grey"
 
                     />
 
@@ -140,7 +132,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/ten_dp"
                         android:layout_marginTop="@dimen/five_dp"
-                        android:text="This is a description and should be replease with the original one" />
+                        tools:text="@string/sample_desc" />
                 </ScrollView>
 
             </LinearLayout>

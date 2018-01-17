@@ -19,11 +19,12 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/account_img"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="@dimen/one_handred_fifty_dp"
+        android:layout_height="@dimen/one_handred_fifty_dp"
         android:src="@drawable/account_icon"
-        app:civ_border_color="#FF000000"
-        app:civ_border_width="2dp"
+        app:civ_border_color="@color/black"
+        app:civ_border_width="@dimen/two_dp"
+        android:contentDescription="@string/user_profile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -38,7 +39,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/account_img"
-        tools:text="Name: MEWENEMESSE" />
+        tools:text="@string/name_placeholder" />
 
     <TextView
         android:id="@+id/account_email"
@@ -49,7 +50,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/account_name"
-        tools:text="Email: pasciano007@gmail.com" />
+        tools:text="@string/surname_placeholder" />
 
     <TextView
         android:id="@+id/account_number"
@@ -60,18 +61,18 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/account_email"
-        tools:text="Email: 91074546" />
+        tools:text="@string/number_placeholder" />
 
     <Button
         android:id="@+id/logout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/accent"
+        android:background="@color/colorAccent"
         android:text="@string/logout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/account_number"
-        android:textColor="@color/md_white_1000"/>
+        android:textColor="@android:color/white"/>
 </android.support.constraint.ConstraintLayout>

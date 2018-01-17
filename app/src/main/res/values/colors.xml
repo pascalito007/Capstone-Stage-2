@@ -13,5 +13,6 @@
     <color name="light_black">#747474</color>
     <color name="black">#616161</color>
     <color name="google">#C6412C</color>
+    <color name="dim_gray">#696969</color>
 
 </resources>

@@ -22,15 +22,15 @@ public class FetchGpodderCategoryPodcastActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fetch_gpodder_category_podcast);
         ButterKnife.bind(this);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Intent intent = getIntent();
+        if (intent != null)
+            category = Parcels.unwrap(intent.getParcelableExtra(Constant.category_extra));
         if (category == null)
             finish();
-        Intent intent=getIntent();
-        if (intent!=null)
-            category= Parcels.unwrap(intent.getParcelableExtra(Constant.category_extra));
 
         GpodderPopularFragment fragment = new GpodderPopularFragment();
-        Bundle bundle=new Bundle();
-        bundle.putString(Constant.tag,category.getTag());
+        Bundle bundle = new Bundle();
+        bundle.putString(Constant.tag, category.getTag());
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().add(R.id.fragment, fragment).commit();
 

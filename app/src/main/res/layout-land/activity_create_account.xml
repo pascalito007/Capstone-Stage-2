@@ -97,7 +97,7 @@
             android:layout_height="@dimen/input_field_height_land"
             android:nextFocusUp="@+id/til_password_create"
             android:nextFocusDown="@+id/bottom"
-            android:background="@color/primary"
+            android:background="@color/colorPrimary"
             android:text="@string/title_activity_create_account"
             android:contentDescription="@string/create_account_label"
             android:textColor="@android:color/white"
@@ -126,7 +126,6 @@
                 style="@style/LoginCreateTextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="onSignInPressed"
                 android:text="@string/button_sign_in" />
         </LinearLayout>
     </LinearLayout>

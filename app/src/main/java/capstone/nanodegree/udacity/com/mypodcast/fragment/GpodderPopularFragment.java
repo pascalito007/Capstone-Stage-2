@@ -1,8 +1,10 @@
 package capstone.nanodegree.udacity.com.mypodcast.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -48,12 +50,14 @@ public class GpodderPopularFragment extends Fragment implements GpodderTopPodcas
     ProgressBar pb_loading_indicator;
     String tag;
     private Unbinder unbinder;
+    SharedPreferences sharedPreferences;
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.gpodder_fragment, container, false);
         unbinder =ButterKnife.bind(this,view);
+        sharedPreferences= PreferenceManager.getDefaultSharedPreferences(getContext());
         Bundle bundle=getArguments();
         if (bundle!=null)
         tag=bundle.getString(Constant.tag);
@@ -85,13 +89,14 @@ public class GpodderPopularFragment extends Fragment implements GpodderTopPodcas
             Request request;
             if (tag != null && !tag.isEmpty()) {
                 Log.d("backgroundfromcategory:", Constant.root_gpodder_feed_url_part + tag + Constant.fifty_json_value);
+
                 request = new Request.Builder()
-                        .url(Constant.root_gpodder_feed_url_part + tag + Constant.fifty_json_value)
+                        .url(Constant.root_gpodder_feed_url_part + tag + "/"+sharedPreferences.getString(getString(R.string.pref_top_podcast_key),getResources().getInteger(R.integer.pref_top_podcast_default)+"")+Constant.fifty_json_value)
                         .build();
             } else {
-                Log.d("backgroundfromtoplist:",gpodder_top_podcast_url);
+               // Log.d("backgroundfromtoplist:",sharedPreferences.getString(getResources().getString(R.string.pref_top_podcast_key),getContext().getResources().getInteger(R.integer.pref_top_podcast_default)+"")+getString(R.string.json_ext));
                 request = new Request.Builder()
-                        .url(gpodder_top_podcast_url)
+                        .url(gpodder_top_podcast_url+sharedPreferences.getString(getResources().getString(R.string.pref_top_podcast_key),getResources().getInteger(R.integer.pref_top_podcast_default)+"")+getString(R.string.json_ext))
                         .build();
             }
 

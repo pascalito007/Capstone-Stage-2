@@ -58,7 +58,7 @@
         android:contentDescription="@string/play_pause"
         android:padding="@dimen/height_dp"
         android:src="@drawable/ic_play"
-        android:tint="@color/accent"
+        android:tint="@color/colorAccent"
         android:tintMode="src_in"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintBottom_toBottomOf="parent"

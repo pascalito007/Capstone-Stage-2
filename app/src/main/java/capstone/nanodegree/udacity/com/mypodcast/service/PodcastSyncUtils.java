@@ -2,8 +2,10 @@ package capstone.nanodegree.udacity.com.mypodcast.service;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.Driver;
@@ -15,6 +17,7 @@ import com.firebase.jobdispatcher.Trigger;
 
 import java.util.concurrent.TimeUnit;
 
+import capstone.nanodegree.udacity.com.mypodcast.R;
 import capstone.nanodegree.udacity.com.mypodcast.provider.MyPodcastContract;
 
 /**
@@ -29,15 +32,15 @@ public class PodcastSyncUtils {
 
     private static final String PODCAST_SYNC_TAG = "podcast-sync";
 
-
     static void scheduleFirebaseJobDispatcherSync(final Context context) {
+        SharedPreferences sharedPreferences=PreferenceManager.getDefaultSharedPreferences(context);
         Driver driver = new GooglePlayDriver(context);
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(driver);
 
         Job syncPodcastJob = dispatcher.newJobBuilder()
                 .setService(PodcastFirebaseJobService.class)
                 .setTag(PODCAST_SYNC_TAG)
-                .setConstraints(Constraint.ON_ANY_NETWORK)
+                .setConstraints(sharedPreferences.getBoolean(context.getString(R.string.pref_connexion_key),context.getResources().getBoolean(R.bool.pref_connexion_default))?Constraint.ON_UNMETERED_NETWORK:Constraint.ON_ANY_NETWORK)
                 .setLifetime(Lifetime.FOREVER)
                 .setRecurring(true)
                 .setTrigger(Trigger.executionWindow(SYNC_INTERVAL_SECONDS, SYNC_INTERVAL_SECONDS + SYNC_FLEXTIME_SECONDS))

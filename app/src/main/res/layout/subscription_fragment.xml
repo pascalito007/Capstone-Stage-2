@@ -8,10 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <ProgressBar
-        android:id="@+id/pb_loading_indicator"
+
+    <TextView
+        android:id="@+id/available"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone" />
-
+        android:layout_gravity="center"
+        android:text="@string/no_podcast_subscription"
+        android:textColor="@color/colorAccent"
+        android:textSize="@dimen/twenty_four_sp" />
 </android.support.design.widget.CoordinatorLayout>

@@ -135,6 +135,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         Glide.with(this).load(podcast.getCoverImage()).into(podcast_img_clean);
 
         tvPodcastCoverTitle.setText(podcast.getTitle());
+
         pbLoadingIndicator.setVisibility(View.VISIBLE);
         if (!podcast.getProvider().equals(Constant.itunes)) {
             new FeedItemsBackGroundTask(podcast.getFeedUrl(), this).execute();
@@ -168,7 +169,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
                 }
             });*//*
         } else {*/
-            setTitle(podcast.getTitle() + getString(R.string.episodes));
+        setTitle(podcast.getTitle() + getString(R.string.episodes));
         //}
         layoutManager = new LinearLayoutManager(this);
         episodeAdapter = new EpisodeAdapter(this, this, "");
@@ -271,10 +272,21 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
 
     @Override
     public void onItemClick(Episode episode, View view) {
+        Log.d("episodecontent", episode.toString());
         Intent intent = new Intent(this, PlayMediaActivity.class);
+
         intent.putExtra(Constant.episode_extra, Parcels.wrap(episode));
         intent.putExtra(Constant.img, podcast.getCoverImage());
+        intent.putExtra(Constant.podcast_extra, Parcels.wrap(podcast));
         startActivityForResult(intent, PLAY_ACTIVITY_REQUEST);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (episodeList != null && !episodeList.isEmpty())
+            pbLoadingIndicator.setVisibility(View.GONE);
+
     }
 
     @OnClick(R.id.refresh)
@@ -432,12 +444,13 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         if (requestCode == PLAY_ACTIVITY_REQUEST) {
             if (resultCode == RESULT_OK) {
                 pbLoadingIndicator.setVisibility(View.GONE);
-                Cursor cursor = getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(data.getStringExtra("podcast_id")).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{data.getStringExtra("podcast_id")}, null);
-                if (cursor != null && cursor.getCount() > 0) {
-                    cursor.moveToFirst();
-                    podcast = Podcast.getPodcastFromCursor(cursor);
-                    Log.d("podcastresult:", podcast + "");
-                }
+                //Cursor cursor = getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(data.getStringExtra("podcast_id")).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{data.getStringExtra("podcast_id")}, null);
+                //if (cursor != null && cursor.getCount() > 0) {
+                //cursor.moveToFirst();
+                //podcast = Podcast.getPodcastFromCursor(cursor);
+                podcast = Parcels.unwrap(data.getParcelableExtra(Constant.podcast_extra));
+                Log.d("podcastresult:", podcast + "");
+                // }
             }
         }
     }
