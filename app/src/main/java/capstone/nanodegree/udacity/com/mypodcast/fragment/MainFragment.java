@@ -176,7 +176,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @OnClick(R.id.refresh)
     public void onRefreshClicked() {
-        Toast.makeText(getContext(), "Data is refreshing in background", Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), R.string.background_task_label, Toast.LENGTH_LONG).show();
         PodcastSyncUtils.startImmediateSync(getContext());
     }
 

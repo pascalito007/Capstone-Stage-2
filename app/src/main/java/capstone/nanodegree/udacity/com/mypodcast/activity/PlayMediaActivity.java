@@ -119,17 +119,31 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
             editor.apply();
             Log.d("serviceplaying:", AppUtils.isMyServiceRunning(PlayMediaService.class, this) + "" + "|img" + img + "|episode:" + episode.toString());
             setBottomValues();
-            if (AppUtils.isMyServiceRunning(PlayMediaService.class, this)) {
-                Intent intent1 = new Intent(this, PlayMediaService.class);
-                stopService(intent1);
+            if (savedInstanceState == null) {
+                if (AppUtils.isMyServiceRunning(PlayMediaService.class, this)) {
+                    Intent intent1 = new Intent(this, PlayMediaService.class);
+                    stopService(intent1);
+                }
+                Intent intent2 = new Intent(this, PlayMediaService.class);
+                intent2.setAction(Constant.ACTION_NEW_URL);
+                intent2.putExtra(Constant.mp3_url, episode.getMp3FileUrl());
+                intent2.putExtra(Constant.player_current_position, 0);
+                startService(intent2);
+
+            } else {
+                if (AppUtils.isMyServiceRunning(PlayMediaService.class, this)) {
+                    Intent intent1 = new Intent(this, PlayMediaService.class);
+                    stopService(intent1);
+                }
+                Intent intent2 = new Intent(this, PlayMediaService.class);
+                intent2.setAction(Constant.ACTION_NEW_URL);
+                intent2.putExtra(Constant.mp3_url, episode.getMp3FileUrl());
+                intent2.putExtra(Constant.player_current_position, savedInstanceState.getLong(Constant.player_current_position));
+                startService(intent2);
             }
-            Intent intent2 = new Intent(this, PlayMediaService.class);
-            intent2.setAction(Constant.ACTION_NEW_URL);
-            intent2.putExtra(Constant.mp3_url, episode.getMp3FileUrl());
-            startService(intent2);
 
 
-            Glide.with(this).asBitmap().load(img).into(new SimpleTarget<Bitmap>() {
+            Glide.with(this).asBitmap().load(podcast.getCoverImage()).into(new SimpleTarget<Bitmap>() {
                 @Override
                 public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
                     mPlayerView.setDefaultArtwork(resource);
@@ -151,6 +165,12 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
         }
 
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putLong(Constant.player_current_position, mPlayerView.getPlayer().getCurrentPosition());
+        super.onSaveInstanceState(outState);
     }
 
 
@@ -292,6 +312,7 @@ public class PlayMediaActivity extends AppCompatActivity implements EpisodeListF
             Intent returnIntent = new Intent();
             returnIntent.putExtra(Constant.podcast_id, episode.getPodcastId());
             returnIntent.putExtra(Constant.img, img);
+            returnIntent.putExtra(Constant.podcast_extra, Parcels.wrap(podcast));
             setResult(Activity.RESULT_OK, returnIntent);
             finish();
             return true;

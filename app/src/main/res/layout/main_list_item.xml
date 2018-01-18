@@ -20,7 +20,7 @@
         android:id="@+id/tv_podcast_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/five_dp"
+        android:layout_marginStart="@dimen/five_dp"
         tools:text="@string/pod_title_placehold"
         android:textColor="@color/black"
         app:layout_constraintLeft_toLeftOf="@+id/img_podcast"

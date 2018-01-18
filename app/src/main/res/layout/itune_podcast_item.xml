@@ -20,7 +20,7 @@
     <TextView
         android:layout_width="@dimen/zero_dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/five_dp"
+        android:layout_marginStart="@dimen/five_dp"
         android:id="@+id/podcast_title"
         android:text="@string/podcast_placeholder_title"
         app:layout_constraintBottom_toBottomOf="@+id/img_podcast"

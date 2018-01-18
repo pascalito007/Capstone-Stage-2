@@ -3,5 +3,6 @@
     android:layout_width="match_parent"
     android:id="@+id/img_subscribe_podcast"
     android:layout_margin="@dimen/five_dp"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:contentDescription="@string/subscribers_image">
 </ImageView>

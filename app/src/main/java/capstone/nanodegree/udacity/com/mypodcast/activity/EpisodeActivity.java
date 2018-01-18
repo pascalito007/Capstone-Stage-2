@@ -145,30 +145,6 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         }
 
 
-        //setTitle("");
-       /* if (findViewById(R.id.frame1) == null) {
-            //CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.toolbar_layout);
-            *//*appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-                boolean isShow = false;
-                int scrollRange = -1;
-
-                @Override
-                public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                    if (scrollRange == -1) {
-                        scrollRange = appBarLayout.getTotalScrollRange();
-                    }
-                    if (scrollRange + verticalOffset == 0) {
-                        if (collapsingToolbarLayout != null)
-                            collapsingToolbarLayout.setTitle(getString(R.string.episode_podcast));
-                        isShow = true;
-                    } else if (isShow) {
-                        if (collapsingToolbarLayout != null)
-                            collapsingToolbarLayout.setTitle(" ");
-                        isShow = false;
-                    }
-                }
-            });*//*
-        } else {*/
         setTitle(podcast.getTitle() + getString(R.string.episodes));
         //}
         layoutManager = new LinearLayoutManager(this);
@@ -340,40 +316,7 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         }
     }
 
-    /*@Override
-    public void onOverFlowItemClick(Episode episode, View view) {
-        PopupMenu popup = new PopupMenu(this, view);
-        MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.menu_episode_popup, popup.getMenu());
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.action_details) {
-                    Cursor cursor = getContentResolver().query(MyPodcastContract.MyPodcastEntry.EPISODE_CONTENT_URI, null, MyPodcastContract.MyPodcastEntry.COLUMN_EPISODE_MP3_URL + " = ?", new String[]{episode.getMp3FileUrl()}, null);
-                    Log.d("cursoritemclick", cursor + "|" + cursor.getCount());
-                    if (cursor != null && cursor.getCount() != 0) {
-                        cursor.moveToFirst();
-                    }
-                    Intent intent = new Intent(EpisodeActivity.this, EpisodeDetailsActivity.class);
-                    Log.d("episodeIdvalue:", cursor.getLong(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_ID)) + "");
-                    intent.putExtra(Constant.episode_id, cursor.getLong(cursor.getColumnIndex(MyPodcastContract.MyPodcastEntry.COLUMN_ID)));
-                    //cursor.close();
-                    startActivityForResult(intent,33);
-                    return true;
 
-                } else if (item.getItemId() == R.id.action_play) {
-                    Intent intent = new Intent(EpisodeActivity.this, PlayMediaActivity.class);
-                    intent.putExtra(Constant.episode_extra, Parcels.wrap(episode));
-                    intent.putExtra(Constant.img, podcast.getCoverImage());
-                    startActivityForResult(intent, PLAY_ACTIVITY_REQUEST);
-                    return true;
-                }
-                return false;
-            }
-        });
-        popup.show();
-    }
-*/
 
     private void startDownload(String rootUrl, String other) {
         Intent intent = new Intent(this, DownloadService.class);
@@ -444,10 +387,6 @@ public class EpisodeActivity extends AppCompatActivity implements EpisodeAdapter
         if (requestCode == PLAY_ACTIVITY_REQUEST) {
             if (resultCode == RESULT_OK) {
                 pbLoadingIndicator.setVisibility(View.GONE);
-                //Cursor cursor = getContentResolver().query(MyPodcastContract.MyPodcastEntry.PODCAST_CONTENT_URI.buildUpon().appendPath(data.getStringExtra("podcast_id")).build(), null, MyPodcastContract.MyPodcastEntry.COLUMN_PODCAST_ID + " = ?", new String[]{data.getStringExtra("podcast_id")}, null);
-                //if (cursor != null && cursor.getCount() > 0) {
-                //cursor.moveToFirst();
-                //podcast = Podcast.getPodcastFromCursor(cursor);
                 podcast = Parcels.unwrap(data.getParcelableExtra(Constant.podcast_extra));
                 Log.d("podcastresult:", podcast + "");
                 // }

@@ -22,9 +22,9 @@ public class PlayerWidgetProvider extends AppWidgetProvider {
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.player_widget);
-        /*Intent intent = new Intent(context,MainActivity.class);
+        Intent intent = new Intent(context,MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        views.setOnClickPendingIntent(R.id.tvTitle, pendingIntent);*/
+        views.setOnClickPendingIntent(R.id.tvTitle, pendingIntent);
         if (mediaTitle == null || mediaTitle.isEmpty())
             views.setTextViewText(R.id.tvTitle, context.getString(R.string.appwidget_text));
         else

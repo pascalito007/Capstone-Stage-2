@@ -24,7 +24,7 @@
         android:text="@string/linux_outlaws"
         app:layout_constraintLeft_toRightOf="@+id/img_gpodder_top"
         app:layout_constraintTop_toTopOf="@+id/img_gpodder_top"
-        android:layout_marginLeft="@dimen/five_dp"/>
+        android:layout_marginStart="@dimen/five_dp"/>
 
     <TextView
         android:id="@+id/tv_gpodder_top_feed_url"

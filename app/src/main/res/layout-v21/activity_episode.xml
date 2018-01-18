@@ -38,7 +38,8 @@
                     android:layout_height="@dimen/one_handred_fifty_dp"
                     android:layout_marginLeft="@dimen/ten_dp"
                     android:layout_marginStart="@dimen/ten_dp"
-                    android:contentDescription="@string/podcast_image_label" />
+                    android:contentDescription="@string/podcast_image_label"
+                    tools:ignore="RtlHardcoded" />
 
                 <TextView
                     android:id="@+id/podcast_cover_title"
@@ -51,7 +52,8 @@
                     tools:text="@string/pod_title_placeholder"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/sixteen_sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:ignore="RtlHardcoded" />
 
                 <TextView
                     android:id="@+id/podcast_cover_subtitle"
@@ -63,7 +65,8 @@
                     android:layout_marginTop="@dimen/ten_dp"
                     android:text="@string/franc_inter_label"
                     android:textColor="@android:color/white"
-                    android:textSize="@dimen/sixteen_sp" />
+                    android:textSize="@dimen/sixteen_sp"
+                    tools:ignore="RtlHardcoded" />
             </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
@@ -116,6 +119,7 @@
                 android:tint="@color/colorAccent"
                 android:visibility="gone"
                 android:id="@+id/refresh"
+                android:contentDescription="@string/refresh_icone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -133,7 +137,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        android:contentDescription="Subscription Button"
+        android:contentDescription="@string/subscription_button"
         app:layout_anchor="@+id/app_bar"
         app:layout_anchorGravity="right|bottom"
         app:srcCompat="@drawable/ic_subscribe_notification_active" />

@@ -3,19 +3,19 @@
 
     <item
         android:id="@+id/action_discover"
-        android:title="Discover"
+        android:title="@string/discover"
         android:icon="@drawable/ic_action_discover"/>
 
     <item
         android:id="@+id/subscription"
         android:icon="@drawable/ic_favorit"
-        android:title="Subscriptions" />
+        android:title="@string/subscriptions" />
     <item
         android:id="@+id/download"
         android:icon="@drawable/ic_drawer_download"
-        android:title="Download" />
+        android:title="@string/download" />
     <item
         android:id="@+id/account"
         android:icon="@drawable/ic_account_circular"
-        android:title="Account" />
+        android:title="@string/account" />
 </menu>

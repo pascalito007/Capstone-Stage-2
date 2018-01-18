@@ -115,6 +115,7 @@
                 android:tint="@color/colorAccent"
                 android:visibility="gone"
                 android:id="@+id/refresh"
+                android:contentDescription="@string/refresh_icone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

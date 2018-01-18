@@ -132,6 +132,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_refresh"
             android:tint="@color/colorAccent"
+            android:contentDescription="@string/refresh_icone"
             android:layout_gravity="center"
             android:visibility="gone"
             android:id="@+id/refresh" />

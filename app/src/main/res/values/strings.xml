@@ -381,5 +381,17 @@
     <string name="refresh_image_icon_desc">Refresh Image</string>
     <string name="gpodder_category_label_ic">gPodder Category</string>
     <string name="pod_title_placehold">La Dev Team</string>
+    <string name="refresh_icone">Refresh icone</string>
+    <string name="subscribers_icone">Subscribers icone</string>
+    <string name="play_button">Play Button</string>
+    <string name="subscription_button">Subscription Button</string>
+    <string name="navigation_button">Navigation Button</string>
+    <string name="discover">Discover</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="account">Account</string>
+    <string name="les_chemins_de_la_philosophie">Les chemins de la philosophie</string>
+    <string name="share">Share</string>
+    <string name="details">Details</string>
+    <string name="background_task_label">Data is refreshing in background</string>
 
 </resources>
